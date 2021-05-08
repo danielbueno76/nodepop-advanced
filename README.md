@@ -1,6 +1,6 @@
-# Practica 4
+# Practica 10: Backend Avanzado
 
-Desarrollar el API que se ejecutará en el servidor de un servicio de venta de artículos de segunda mano llamado Nodepop.
+Autenticación, internacionalización y subida de imagen con tarea en background.
 
 ## Tecnologías usadas
 
@@ -11,7 +11,7 @@ Desarrollar el API que se ejecutará en el servidor de un servicio de venta de a
 
 ## Comandos
 
-1. node run installDB = Inicialización de la base de datos
+1. node run initDB = Inicialización de la base de datos
 2. node run start = Ejecución de la web-api.
 3. node run dev = Ejecución de la web-api con nodemon en localhost:3000. Entorno de desarrollo.
 
