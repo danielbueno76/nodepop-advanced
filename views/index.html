@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
-    <h1><%= title %></h1>
-    <h2>Lista de anuncios</h2>
+    <nav class="topnav">
+      <% getLocales().forEach(locale => { %>
+      <a href="/change-locale/<%= locale %>"> <%= locale %> </a> &nbsp; <% }) %>
+    </nav>
+    <h1><%=__('Welcome to {{title}}', {title})%></h1>
+    <h2><%=__('Advertisements list')%></h2>
     <main class="main">
       <section class="section">
         <div class="item-ms-container">
@@ -14,11 +19,12 @@
           <article class="item-ms">
             <img src="../images/<%=ad.photo%>" alt="<%= ad.name %>" />
             <p class="description">
-              Title: <%= ad.name %><br />
+              Title: <%= __(ad.name) %><br />
               Price: <%= ad.price %><br />
-              <% if (ad.sale) { %> The product is available for sale. <% } else
-              { %> I am looking for this product. <% } %><br />
-              Tags: <% ad.tags.forEach(tag=> { %> <%= tag %>, <% }) %>
+              <% if (ad.sale) { %> <%=__('The product is available for sale.')%>
+              <% } else { %> <%=__('I am looking for this product.')%> <% }
+              %><br />
+              Tags: <% ad.tags.forEach(tag=> { %> <%= __(tag) %>, <% }) %>
             </p>
           </article>
           <% }) %>

@@ -3,9 +3,16 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00b7ff;
+.topnav a {
+  position: relative;
+  color: #030303;
+  text-decoration: none;
+  float: none;
+  top: 50%;
+  left: 50%;
+  font-size: larger;
 }
+
 h1,
 h2 {
   text-align: center;
