@@ -24,10 +24,13 @@ app.use(express.static(path.join(__dirname, "public")));
 /**
  * API paths
  */
+app.use("/api/authenticate", require("./routes/api/authenticate"));
 app.use("/api/advertisement", require("./routes/api/advertisement"));
 
+/**
+ * Middleware of website sessions
+ */
 app.use("/", require("./routes/index"));
-app.use("/users", require("./routes/users"));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

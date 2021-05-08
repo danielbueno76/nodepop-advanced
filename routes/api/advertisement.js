@@ -3,11 +3,12 @@
 const express = require("express");
 const router = express.Router();
 
-const Ad = require("../../models/Advertisement");
+const jwtAuth = require("../../lib/jwtAuth");
+const { Advertisement } = require("../../models");
 
 /* GET /api/advertisement */
 // List of ads
-router.get("/", async function (req, res, next) {
+router.get("/", jwtAuth, async function (req, res, next) {
   try {
     const name = req.query.name;
     const price = req.query.price;
@@ -46,7 +47,7 @@ router.get("/", async function (req, res, next) {
       filtro.tags = { $in: tag };
     }
 
-    const result = await Ad.list(filtro, limit, start, fields, sort);
+    const result = await Advertisement.list(filtro, limit, start, fields, sort);
     res.json(result);
   } catch (err) {
     next(err);
@@ -59,7 +60,7 @@ router.get("/:id", async (req, res, next) => {
   try {
     const _id = req.params.id;
 
-    const ad = await Ad.findOne({ _id: _id });
+    const ad = await Advertisement.findOne({ _id: _id });
 
     if (!ad) {
       return res.status(404).json({ error: "not found" });
@@ -76,7 +77,7 @@ router.post("/", async (req, res, next) => {
   try {
     const adData = req.body;
 
-    const ad = new Ad(adData);
+    const ad = new Advertisement(adData);
 
     const adCreado = await ad.save();
 
@@ -93,10 +94,14 @@ router.put("/:id", async (req, res, next) => {
     const _id = req.params.id;
     const adData = req.body;
 
-    const adActualizado = await Ad.findOneAndUpdate({ _id: _id }, adData, {
-      new: true,
-      useFindAndModify: false,
-    });
+    const adActualizado = await Advertisement.findOneAndUpdate(
+      { _id: _id },
+      adData,
+      {
+        new: true,
+        useFindAndModify: false,
+      }
+    );
 
     if (!adActualizado) {
       res.status(404).json({ error: "not found" });
@@ -115,7 +120,7 @@ router.delete("/:id", async (req, res, next) => {
   try {
     const _id = req.params.id;
 
-    await Ad.deleteOne({ _id: _id });
+    await Advertisement.deleteOne({ _id: _id });
 
     res.json();
   } catch (error) {
