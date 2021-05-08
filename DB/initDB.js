@@ -1,5 +1,7 @@
 "use strict";
 
+require("dotenv").config();
+
 const conn = require("../lib/connectMongoose");
 const Advertisement = require("../models/Advertisement");
 const adsInit = require("./ads.json");
