@@ -1,0 +1,88 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00b7ff;
+}
+h1,
+h2 {
+  text-align: center;
+  color: #030303;
+}
+
+.item-ms:hover {
+  flex-grow: 5;
+}
+
+.item-ms img:hover ~ .description {
+  visibility: visible;
+  opacity: 1;
+  transition: 0.5s;
+  transition-delay: 0.5s;
+}
+
+.description {
+  background-color: whitesmoke;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 2rem;
+  padding: 1.1rem;
+
+  visibility: hidden;
+  opacity: 0;
+  text-align: left;
+  border: black 0.5rem solid;
+}
+p.description {
+  font-size: 25px;
+}
+
+.item-ms {
+  padding-right: 0;
+  padding-left: 0;
+  padding-top: 0;
+  padding-bottom: 1rem;
+  margin: 0;
+}
+
+.item-ms img {
+  height: 50rem;
+  object-fit: cover;
+  object-position: center top;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .item-ms-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-rows: auto;
+  }
+
+  .item-ms img {
+    height: 13rem;
+    object-fit: cover;
+    object-position: center top;
+    margin: 0;
+    padding: 0;
+  }
+}
+@media (max-width: 768px) {
+  .description {
+    background-color: whitesmoke;
+    position: relative;
+    bottom: 0;
+    left: 0;
+    margin: 2rem;
+    padding: 1.1rem;
+
+    visibility: hidden;
+    opacity: 0;
+    text-align: left;
+    border: black 0.5rem solid;
+  }
+}

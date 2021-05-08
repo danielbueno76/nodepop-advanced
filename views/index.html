@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <h2>Lista de anuncios</h2>
+    <main class="main">
+      <section class="section">
+        <div class="item-ms-container">
+          <% ads.forEach(ad=> { %>
+            <article class="item-ms">
+              <img src="../images/<%=ad.photo%>" alt="<%= ad.name %>" />
+              <p class="description">
+                Title: <%= ad.name %><br>
+                Price: <%= ad.price %><br>
+                <% if (ad.sale) { %>
+                    The product is available for sale.
+                <% } else { %>
+                    I am looking for this product.
+                <% } %><br>
+                Tags: 
+                <% ad.tags.forEach(tag=> { %>
+                    <%= tag %>,
+                <% }) %>
+              </p>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+
+    </main>
+
+  </body>
+</html>
