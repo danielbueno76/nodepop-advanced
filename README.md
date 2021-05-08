@@ -19,11 +19,12 @@ Autenticación, internacionalización y subida de imagen con tarea en background
 
 ### Ejemplos
 
-1. GET /api/advertisement = Obten todos los anuncios en formato json.
-2. GET /api/advertisement/:id = Obten un anuncio con el id especificado en formato json.
-3. POST /api/advertisement = añade un anuncio a la base de datos.
-4. PUT /api/advertisement/:id = Modifica el anuncio con el id especificado.
-5. DELETE /api/advertisement/:id = Borra el anuncio con el id especificado.
+1. POST /api/authenticate = Realiza login y devuelve un token JWT.
+2. GET /api/advertisement = Obten todos los anuncios en formato json. Es necesario incluir el token JWT en uno de los siguientes sitios: cabecera, body o query. Si no incluyes el token o está expirado devolverá un 401.
+3. GET /api/advertisement/:id = Obten un anuncio con el id especificado en formato json.
+4. POST /api/advertisement = añade un anuncio a la base de datos.
+5. PUT /api/advertisement/:id = Modifica el anuncio con el id especificado.
+6. DELETE /api/advertisement/:id = Borra el anuncio con el id especificado.
 
 ## Querys
 
