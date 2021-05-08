@@ -11,9 +11,9 @@ Autenticación, internacionalización y subida de imagen con tarea en background
 
 ## Comandos
 
-1. node run initDB = Inicialización de la base de datos
-2. node run start = Ejecución de la web-api.
-3. node run dev = Ejecución de la web-api con nodemon en localhost:3000. Entorno de desarrollo.
+1. npm run initDB = Inicialización de la base de datos
+2. npm run start = Ejecución de la web-api.
+3. npm run dev = Ejecución de la web-api con nodemon en localhost:3000. Entorno de desarrollo.
 
 ## API
 
