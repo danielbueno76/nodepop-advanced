@@ -1,6 +1,6 @@
-'use strict'
+"use strict";
 
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 // we define a schema for our document
 const advertisementSchema = mongoose.Schema({
@@ -8,20 +8,26 @@ const advertisementSchema = mongoose.Schema({
   sale: { type: Boolean, index: true },
   price: { type: Number, index: true },
   photo: String,
-  tags: [{ type: String, index: true }]
-})
+  tags: [{ type: String, index: true }],
+});
 
 // list of ads
-advertisementSchema.statics.list = function (filtro, limit, skip, fields, sort) {
-  const query = Advertisement.find(filtro)
-  query.limit(limit)
-  query.skip(skip)
-  query.select(fields)
-  query.sort(sort)
-  return query.exec()
-}
+advertisementSchema.statics.list = function (
+  filtro,
+  limit,
+  skip,
+  fields,
+  sort
+) {
+  const query = Advertisement.find(filtro);
+  query.limit(limit);
+  query.skip(skip);
+  query.select(fields);
+  query.sort(sort);
+  return query.exec();
+};
 
 // we create the model
-const Advertisement = mongoose.model('Advertisement', advertisementSchema)
+const Advertisement = mongoose.model("Advertisement", advertisementSchema);
 
-module.exports = Advertisement
+module.exports = Advertisement;
