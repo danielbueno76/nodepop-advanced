@@ -93,10 +93,10 @@ router.post("/", async (req, res, next) => {
     requester.send(
       {
         type: "thumbnail",
-        file: req.file,
+        files: [req.file],
       },
       () => {
-        console.log("finished");
+        console.log(`Finished resizing ${req.file.originalname}`);
         return;
       }
     );

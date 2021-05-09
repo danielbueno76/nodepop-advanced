@@ -14,7 +14,7 @@ Autenticación, internacionalización y subida de imagen con tarea en background
 1. npm run initDB = Inicialización de la base de datos
 2. npm run start = Ejecución de la web-api.
 3. npm run dev = Ejecución de la web-api con nodemon en localhost:3000. Entorno de desarrollo.
-4. npm run conversionImage: Test thumbnail de imagen usando jimp.
+4. npm run conversionImage: Se activa el microservicio que hace thumbnail de cada imagen que se sube con POST /api/advertisement con un tamaño de 100x100 pixeles. También funciona si ejecutas npm run initDB, ya que hará thumbnail de las imagenes usadas para la inicializacion de la base de datos.
 
 _Necesitas hacerte una copia del fichero .env.example y renombrarlo a .env para poder usar tu propia configuración al proyecto._
 
