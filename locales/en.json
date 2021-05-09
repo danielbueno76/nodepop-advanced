@@ -1,11 +1,15 @@
 {
-  "Welcome to {{title}}": "Welcome to {{title}}",
-  "Advertisements list": "Advertisements list",
-  "The product is available for sale.": "The product is available for sale.",
-  "I am looking for this product.": "I am looking for this product.",
-  "lifestyle": "lifestyle",
-  "motor": "motor",
-  "mobile": "mobile",
-  "iPhone 3GS": "iPhone 3GS",
-  "Bike": "Bicicleta"
+	"Welcome to {{title}}": "Welcome to {{title}}",
+	"Advertisements list": "Advertisements list",
+	"The product is available for sale.": "The product is available for sale.",
+	"I am looking for this product.": "I am looking for this product.",
+	"lifestyle": "lifestyle",
+	"motor": "motor",
+	"mobile": "mobile",
+	"iPhone 3GS": "iPhone 3GS",
+	"Bike": "Bicicleta",
+	"Ordenador": "Ordenador",
+	"work, lifestyle": "work, lifestyle",
+	"Computer": "Computer",
+	"work,lifestyle": "work,lifestyle"
 }

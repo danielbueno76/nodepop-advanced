@@ -5,6 +5,9 @@ const router = express.Router();
 
 const jwtAuth = require("../../lib/jwtAuth");
 const { Advertisement } = require("../../models");
+const storeFileSmallName = require("../../lib/storeFileSmallName");
+const cote = require("cote");
+const requester = new cote.Requester({ name: "image client" });
 
 /* GET /api/advertisement */
 // List of ads
@@ -77,11 +80,26 @@ router.post("/", async (req, res, next) => {
   try {
     const adData = req.body;
 
+    if (req.file) {
+      // Send a message with fileName and full path.
+      adData.photo = storeFileSmallName(req.file);
+    }
     const ad = new Advertisement(adData);
 
-    const adCreado = await ad.save();
+    const adCreated = await ad.save();
+    res.status(201).json({ result: adCreated });
 
-    res.status(201).json({ result: adCreado });
+    // microservice that makes a thumbnail of the image
+    requester.send(
+      {
+        type: "thumbnail",
+        file: req.file,
+      },
+      () => {
+        console.log("finished");
+        return;
+      }
+    );
   } catch (error) {
     next(error);
   }

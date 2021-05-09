@@ -3,6 +3,8 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const multer = require("multer");
+const upload = multer({ dest: path.join(__dirname, "public/images/") });
 
 const app = express();
 
@@ -29,7 +31,11 @@ app.use(i18n.init);
  * API paths
  */
 app.use("/api/authenticate", require("./routes/api/authenticate"));
-app.use("/api/advertisement", require("./routes/api/advertisement"));
+app.use(
+  "/api/advertisement",
+  upload.single("photo"),
+  require("./routes/api/advertisement")
+);
 
 /**
  * Website paths
