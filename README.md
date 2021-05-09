@@ -1,6 +1,6 @@
 # Practica 10: Backend Avanzado
 
-Autenticación, internacionalización, subida de imagen con tarea en backgroundy tests de integracion.
+Autenticación, internacionalización, subida de imagen con tarea en background y tests de integracion.
 
 ## Tecnologías usadas
 
