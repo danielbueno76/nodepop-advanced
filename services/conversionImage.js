@@ -7,7 +7,7 @@ response.on("thumbnail", (req, done) => {
   const { files } = req;
   files.forEach((file) => {
     Jimp.read(`${file.destination}${file.originalname}`).then((image) => {
-      image.resize(100, 100);
+      image.scaleToFit(100, 100);
 
       image.write(`${file.destination}${file.originalname}`);
     });

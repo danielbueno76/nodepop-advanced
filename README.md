@@ -9,6 +9,14 @@ Autenticación, internacionalización, subida de imagen con tarea en background 
 - Node.js
 - EJS
 
+## Requerimientos previos
+
+_Necesitas hacerte una copia del fichero .env.example y renombrarlo a .env para poder usar tu propia configuración al proyecto._
+
+```shell
+cp .env.example .env
+```
+
 ## Comandos
 
 1. npm run initDB = Inicialización de la base de datos
@@ -16,12 +24,6 @@ Autenticación, internacionalización, subida de imagen con tarea en background 
 3. npm run dev = Ejecución de la web-api con nodemon en localhost:3000. Entorno de desarrollo.
 4. npm run conversionImage = Se activa el microservicio que hace thumbnail de cada imagen que se sube con POST /api/advertisement con un tamaño de 100x100 pixeles. También funciona si ejecutas npm run initDB, ya que hará thumbnail de las imagenes usadas para la inicializacion de la base de datos.
 5. npm run test = Ejecuta los tests de la api.
-
-_Necesitas hacerte una copia del fichero .env.example y renombrarlo a .env para poder usar tu propia configuración al proyecto._
-
-```shell
-cp .env.example .env
-```
 
 ## API
 
