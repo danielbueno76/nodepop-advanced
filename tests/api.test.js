@@ -22,7 +22,7 @@ describe("Authentication", () => {
       });
   });
 
-  it("[AUTH] GET /api/v1/adverts?token=token should return status 200 and JSON", function (done) {
-    request(app).get(`/api/v1/adverts?token=${token}`).expect(200, done);
+  it("[AUTH] GET /api/v1/adverts?accessToken=token should return status 200 and JSON", function (done) {
+    request(app).get(`/api/v1/adverts?accessToken=${token}`).expect(200, done);
   });
 });
