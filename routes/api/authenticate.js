@@ -5,7 +5,7 @@ const router = express.Router();
 const { User } = require("../../models");
 const jwt = require("jsonwebtoken");
 
-// POST /api/authenticate (body)
+// POST /api/auth/login (body)
 // Return JWT token
 router.post("/", async (req, res, next) => {
   try {

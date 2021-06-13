@@ -22,19 +22,19 @@ cp .env.example .env
 1. npm run initDB = Inicialización de la base de datos
 2. npm run start = Ejecución de la web-api.
 3. npm run dev = Ejecución de la web-api con nodemon en localhost:3000. Entorno de desarrollo.
-4. npm run conversionImage = Se activa el microservicio que hace thumbnail de cada imagen que se sube con POST /api/advertisement con un tamaño de 100x100 pixeles. También funciona si ejecutas npm run initDB, ya que hará thumbnail de las imagenes usadas para la inicializacion de la base de datos.
+4. npm run conversionImage = Se activa el microservicio que hace thumbnail de cada imagen que se sube con POST /api/v1/adverts con un tamaño de 100x100 pixeles. También funciona si ejecutas npm run initDB, ya que hará thumbnail de las imagenes usadas para la inicializacion de la base de datos.
 5. npm run test = Ejecuta los tests de la api.
 
 ## API
 
 ### Ejemplos
 
-1. POST /api/authenticate = Realiza login y devuelve un token JWT.
-2. GET /api/advertisement = Obten todos los anuncios en formato json. Es necesario incluir el token JWT en uno de los siguientes sitios: cabecera, body o query. Si no incluyes el token o está expirado devolverá un 401.
-3. GET /api/advertisement/:id = Obten un anuncio con el id especificado en formato json.
-4. POST /api/advertisement = añade un anuncio a la base de datos.
-5. PUT /api/advertisement/:id = Modifica el anuncio con el id especificado.
-6. DELETE /api/advertisement/:id = Borra el anuncio con el id especificado.
+1. POST /api/auth/login = Realiza login y devuelve un token JWT.
+2. GET /api/v1/adverts = Obten todos los anuncios en formato json. Es necesario incluir el token JWT en uno de los siguientes sitios: cabecera, body o query. Si no incluyes el token o está expirado devolverá un 401.
+3. GET /api/v1/adverts/:id = Obten un anuncio con el id especificado en formato json.
+4. POST /api/v1/adverts = añade un anuncio a la base de datos.
+5. PUT /api/v1/adverts/:id = Modifica el anuncio con el id especificado.
+6. DELETE /api/v1/adverts/:id = Borra el anuncio con el id especificado.
 
 ## Querys
 

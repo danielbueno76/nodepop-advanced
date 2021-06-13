@@ -8,9 +8,9 @@ const app = require("../app");
 describe("Authentication", () => {
   let token = "";
 
-  it("POST /api/authenticate should return a json response with a token JWT and status 200", function (done) {
+  it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
     request(app)
-      .post("/api/authenticate")
+      .post("/api/auth/login")
       .send({
         email: "user@example.com",
         password: "1234",
@@ -22,7 +22,7 @@ describe("Authentication", () => {
       });
   });
 
-  it("[AUTH] GET /api/advertisement?token=token should return status 200 and JSON", function (done) {
-    request(app).get(`/api/advertisement?token=${token}`).expect(200, done);
+  it("[AUTH] GET /api/v1/adverts?token=token should return status 200 and JSON", function (done) {
+    request(app).get(`/api/v1/adverts?token=${token}`).expect(200, done);
   });
 });

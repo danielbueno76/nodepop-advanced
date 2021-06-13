@@ -30,6 +30,11 @@ app.use(i18n.init);
 /**
  * API paths
  */
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 app.use("/api/auth/login", require("./routes/api/authenticate"));
 app.use(
   "/api/v1/adverts",
