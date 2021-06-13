@@ -29,7 +29,7 @@ router.post("/", async (req, res, next) => {
           next(err);
           return;
         }
-        res.json({ token: jwtToken });
+        res.json({ accessToken: jwtToken });
       }
     );
   } catch (error) {

@@ -17,7 +17,7 @@ describe("Authentication", () => {
       })
       .expect(200)
       .end((err, res) => {
-        token = res.body.token;
+        token = res.body.accessToken;
         done();
       });
   });
