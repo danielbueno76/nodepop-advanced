@@ -13,17 +13,23 @@ const advertisementSchema = mongoose.Schema({
 
 // list of ads
 advertisementSchema.statics.list = function (
-  filtro,
-  limit,
-  skip,
-  fields,
-  sort
+  filtro = {},
+  limit = null,
+  skip = null,
+  fields = null,
+  sort = null
 ) {
   const query = Advertisement.find(filtro);
   query.limit(limit);
   query.skip(skip);
   query.select(fields);
   query.sort(sort);
+  return query.exec();
+};
+
+// list of ads
+advertisementSchema.statics.listTags = function () {
+  const query = Advertisement.find({}, { _id: false, tags: true });
   return query.exec();
 };
 

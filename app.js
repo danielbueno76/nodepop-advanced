@@ -30,9 +30,9 @@ app.use(i18n.init);
 /**
  * API paths
  */
-app.use("/api/authenticate", require("./routes/api/authenticate"));
+30013001app.use("/api/auth/login", require("./routes/api/authenticate"));
 app.use(
-  "/api/advertisement",
+  "/api/v1/adverts",
   upload.single("photo"),
   require("./routes/api/advertisement")
 );

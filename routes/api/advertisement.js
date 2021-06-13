@@ -9,7 +9,7 @@ const storeFileSmallName = require("../../lib/storeFileSmallName");
 const cote = require("cote");
 const requester = new cote.Requester({ name: "image client" });
 
-/* GET /api/advertisement */
+/* GET /api/v1/adverts */
 // List of ads
 router.get("/", jwtAuth, async function (req, res, next) {
   try {
@@ -57,9 +57,25 @@ router.get("/", jwtAuth, async function (req, res, next) {
   }
 });
 
-// GET /api/advertisement/:id
+// GET /api/v1/adverts/tags
+// Obtain tags
+router.get("/tags", async (req, res, next) => {
+  try {
+    const result = await Advertisement.listTags();
+    let resultAdapted = [];
+    result.forEach((element) => {
+      resultAdapted = [...resultAdapted, ...element.tags];
+    });
+    resultAdapted = [...new Set(resultAdapted)]; // remove duplicates
+    res.json(resultAdapted);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/adverts/:id
 // Obtain an ad
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
 
@@ -74,9 +90,9 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-// POST /api/advertisement (body)
+// POST /api/v1/adverts (body)
 // Create an ad
-router.post("/", async (req, res, next) => {
+router.post("/", jwtAuth, async (req, res, next) => {
   try {
     const adData = req.body;
 
@@ -105,9 +121,9 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-// PUT /api/advertisement/:id (body)
+// PUT /api/v1/adverts/:id (body)
 // Update an ad
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
     const adData = req.body;
@@ -132,9 +148,9 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-// DELETE /api/advertisement/:id
+// DELETE /api/v1/adverts/:id
 // Delete an ad
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
 
