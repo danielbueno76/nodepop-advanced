@@ -4,8 +4,8 @@ Autenticación, internacionalización, subida de imagen con tarea en background 
 
 ## URL
 
-http://ec2-3-142-193-8.us-east-2.compute.amazonaws.com/ -> Practica Node Avanzado
-IP: http://3.142.193.8/ -> Practica React
+- http://ec2-3-142-193-8.us-east-2.compute.amazonaws.com/ -> Practica Node Avanzado
+- IP: http://3.142.193.8/ -> Practica React
 
 Se ha adaptado la práctica de node para que el backend y el frontend funcionen adecuadamente como una pagina completa.
 
