@@ -16,7 +16,7 @@ router.get("/", jwtAuth, async function (req, res, next) {
     const name = req.query.name;
     const price = req.query.price;
     const sale = req.query.sale;
-    const tag = req.query.tag;
+    const tags = req.query.tags;
     const limit = parseInt(req.query.limit);
     const start = parseInt(req.query.start);
     const fields = req.query.fields;
@@ -28,17 +28,21 @@ router.get("/", jwtAuth, async function (req, res, next) {
     }
 
     if (price) {
-      if (price.search("-") !== -1) {
-        const pricesArray = price.split("-");
-        if (pricesArray[0] === "") {
-          filtro.price = { $lt: pricesArray[1] };
-        } else if (pricesArray[1] === "") {
-          filtro.price = { $gt: pricesArray[0] };
-        } else if (pricesArray[0] !== "" && pricesArray[1] !== "") {
-          filtro.price = { $gt: pricesArray[0], $lt: pricesArray[1] };
-        }
+      let pricesArray = [];
+      if (Array.isArray(price)) {
+        pricesArray = price;
+      } else if (price.search("-") !== -1) {
+        pricesArray = price.split("-");
       } else {
         filtro.price = price;
+      }
+
+      if (pricesArray[0] === "") {
+        filtro.price = { $lte: pricesArray[1] };
+      } else if (pricesArray[1] === "") {
+        filtro.price = { $gte: pricesArray[0] };
+      } else if (pricesArray[0] !== "" && pricesArray[1] !== "") {
+        filtro.price = { $gte: pricesArray[0], $lte: pricesArray[1] };
       }
     }
 
@@ -46,12 +50,23 @@ router.get("/", jwtAuth, async function (req, res, next) {
       filtro.sale = sale;
     }
 
-    if (tag) {
-      filtro.tags = { $in: tag };
+    if (tags) {
+      filtro.tags = { $in: tags };
     }
-
     const result = await Advertisement.list(filtro, limit, start, fields, sort);
-    res.json(result);
+    res.json(
+      result.map((elem) => {
+        return {
+          id: elem.id,
+          createdAt: "",
+          name: elem.name,
+          price: elem.price,
+          sale: elem.sale,
+          tags: elem.tags,
+          photo: elem.photo ? "/images/" + elem.photo : null,
+        };
+      })
+    );
   } catch (err) {
     next(err);
   }
@@ -95,7 +110,6 @@ router.get("/:id", jwtAuth, async (req, res, next) => {
 router.post("/", jwtAuth, async (req, res, next) => {
   try {
     const adData = req.body;
-
     if (req.file) {
       // Send a message with fileName and full path.
       adData.photo = storeFileSmallName(req.file);
@@ -103,7 +117,16 @@ router.post("/", jwtAuth, async (req, res, next) => {
     const ad = new Advertisement(adData);
 
     const adCreated = await ad.save();
-    res.status(201).json({ result: adCreated });
+
+    res.status(201).json({
+      id: adCreated.id,
+      createdAt: "",
+      name: adCreated.name,
+      price: adCreated.price,
+      sale: adCreated.sale,
+      tags: adCreated.tags,
+      photo: adCreated.photo ? "/images/" + adCreated.photo : null,
+    });
 
     // microservice that makes a thumbnail of the image
     requester.send(
