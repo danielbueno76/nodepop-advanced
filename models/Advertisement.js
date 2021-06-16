@@ -8,6 +8,7 @@ const advertisementSchema = mongoose.Schema({
   sale: { type: Boolean, index: true },
   price: { type: Number, index: true },
   photo: String,
+  createdAt: Date,
   tags: [{ type: String, index: true }],
 });
 

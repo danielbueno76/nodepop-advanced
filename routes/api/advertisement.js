@@ -58,7 +58,7 @@ router.get("/", jwtAuth, async function (req, res, next) {
       result.map((elem) => {
         return {
           id: elem.id,
-          createdAt: "",
+          createdAt: elem.createdAt.toString(),
           name: elem.name,
           price: elem.price,
           sale: elem.sale,
@@ -114,13 +114,13 @@ router.post("/", jwtAuth, async (req, res, next) => {
       // Send a message with fileName and full path.
       adData.photo = storeFileSmallName(req.file);
     }
-    const ad = new Advertisement(adData);
+    const ad = new Advertisement({ ...adData, createdAt: Date.now() });
 
     const adCreated = await ad.save();
 
     res.status(201).json({
       id: adCreated.id,
-      createdAt: "",
+      createdAt: adCreated.createdAt,
       name: adCreated.name,
       price: adCreated.price,
       sale: adCreated.sale,

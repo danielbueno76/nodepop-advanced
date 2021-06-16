@@ -22,7 +22,11 @@ conn.once("open", async () => {
 
 async function initAdsNodepop() {
   await Advertisement.deleteMany();
-  await Advertisement.insertMany(adsInit);
+  await Advertisement.insertMany(
+    adsInit.map((adInit) => {
+      return { ...adInit, createdAt: Date.now() };
+    })
+  );
   let files = [];
 
   adsInit.forEach((adInit) => {
