@@ -4,13 +4,15 @@
     "sale": true,
     "price": 230.15,
     "photo": "bike.jpg",
-    "tags": ["lifestyle", "motor"]
+    "tags": ["lifestyle", "motor"],
+    "userEmail": "user1@example.com"
   },
   {
     "name": "iPhone 3GS",
     "sale": false,
     "price": 50.0,
     "photo": "iphone.jpg",
-    "tags": ["lifestyle", "mobile", "work"]
+    "tags": ["lifestyle", "mobile"],
+    "userEmail": "user2@example.com"
   }
 ]

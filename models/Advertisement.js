@@ -1,15 +1,46 @@
 "use strict";
 
 const mongoose = require("mongoose");
+const TAGS = ["lifestyle", "motor", "mobile", "work"];
+const { User } = require("./User");
 
 // we define a schema for our document
 const advertisementSchema = mongoose.Schema({
-  name: { type: String, index: true },
-  sale: { type: Boolean, index: true },
-  price: { type: Number, index: true },
+  name: {
+    type: String,
+    index: true,
+    required: [true, "The name of the ad is mandatory"],
+  },
+  sale: {
+    type: Boolean,
+    index: true,
+    required: [true, "The sale is mandatory"],
+  },
+  price: {
+    type: Number,
+    min: 0.0,
+    index: true,
+    required: [true, "The price is mandatory"],
+  },
   photo: String,
-  createdAt: Date,
-  tags: [{ type: String, index: true }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  tags: {
+    type: [String],
+    enum: {
+      values: TAGS,
+      message:
+        "{VALUE} is not supported. Choose one of the following tags: " +
+        TAGS.join(", "),
+    },
+    validate: (v) => Array.isArray(v) && v.length > 0,
+    index: true,
+  },
+  userEmail: {
+    type: String,
+    required: [true, "The user email is mandatory"],
+    index: true,
+  },
 });
 
 // list of ads
@@ -30,8 +61,7 @@ advertisementSchema.statics.list = function (
 
 // list of ads
 advertisementSchema.statics.listTags = function () {
-  const query = Advertisement.find({}, { _id: false, tags: true });
-  return query.exec();
+  return TAGS;
 };
 
 // we create the model

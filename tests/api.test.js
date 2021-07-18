@@ -12,7 +12,7 @@ describe("Authentication", () => {
     request(app)
       .post("/api/auth/login")
       .send({
-        email: "user@example.com",
+        email: "user1@example.com",
         password: "1234",
       })
       .expect(200)

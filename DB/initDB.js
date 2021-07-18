@@ -1,17 +1,19 @@
 "use strict";
 
 require("dotenv").config();
+const mongoose = require("mongoose");
 const cote = require("cote");
 const requester = new cote.Requester({ name: "image client", timeout: 2000 });
 const path = require("path");
 const conn = require("../lib/connectMongoose");
 const { Advertisement, User } = require("../models");
 const adsInit = require("./ads.json");
+const usersInit = require("./users.json");
 
 conn.once("open", async () => {
   try {
-    await initAdsNodepop();
     await initUsers();
+    await initAdsNodepop();
     console.log("The initialization of the database has been successfully.");
     conn.close();
   } catch (err) {
@@ -22,11 +24,22 @@ conn.once("open", async () => {
 
 async function initAdsNodepop() {
   await Advertisement.deleteMany();
-  await Advertisement.insertMany(
-    adsInit.map((adInit) => {
-      return { ...adInit, createdAt: Date.now() };
-    })
+  const adsInserted = await Advertisement.insertMany(
+    await Promise.all(
+      adsInit.map(async (adInit) => {
+        await User.checkEmail(adInit.userEmail);
+
+        return { ...adInit, createdAt: Date.now(), updatedAt: Date.now() };
+      })
+    )
   );
+  for (const adInserted of adsInserted) {
+    await User.updateOne(
+      { email: adInserted.userEmail },
+      { $push: { ads: adInserted.id } }
+    );
+  }
+
   let files = [];
 
   adsInit.forEach((adInit) => {
@@ -60,10 +73,16 @@ async function initAdsNodepop() {
 
 async function initUsers() {
   await User.deleteMany();
-  await User.insertMany([
-    {
-      email: "user@example.com",
-      password: await User.hashPassword("1234"),
-    },
-  ]);
+  const usersHashInit = await Promise.all(
+    usersInit.map(async (userInit) => {
+      return {
+        ...userInit,
+        password: await User.hashPassword(userInit.password),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+    })
+  );
+
+  await User.insertMany(usersHashInit);
 }

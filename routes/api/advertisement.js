@@ -2,12 +2,14 @@
 
 const express = require("express");
 const router = express.Router();
-
+const mongoose = require("mongoose");
 const jwtAuth = require("../../lib/jwtAuth");
-const { Advertisement } = require("../../models");
+const { Advertisement, User } = require("../../models");
 const storeFileSmallName = require("../../lib/storeFileSmallName");
 const cote = require("cote");
+const { Mongoose } = require("mongoose");
 const requester = new cote.Requester({ name: "image client" });
+const pathImages = "images/";
 
 /* GET /api/v1/adverts */
 // List of ads
@@ -59,11 +61,12 @@ router.get("/", jwtAuth, async function (req, res, next) {
         return {
           id: elem.id,
           createdAt: elem.createdAt.toString(),
+          updatedAt: elem.updatedAt.toString(),
           name: elem.name,
           price: elem.price,
           sale: elem.sale,
           tags: elem.tags,
-          photo: elem.photo ? "/images/" + elem.photo : null,
+          photo: elem.photo ? pathImages + elem.photo : null,
         };
       })
     );
@@ -77,12 +80,7 @@ router.get("/", jwtAuth, async function (req, res, next) {
 router.get("/tags", async (req, res, next) => {
   try {
     const result = await Advertisement.listTags();
-    let resultAdapted = [];
-    result.forEach((element) => {
-      resultAdapted = [...resultAdapted, ...element.tags];
-    });
-    resultAdapted = [...new Set(resultAdapted)]; // remove duplicates
-    res.json(resultAdapted);
+    res.json(result);
   } catch (err) {
     next(err);
   }
@@ -114,18 +112,26 @@ router.post("/", jwtAuth, async (req, res, next) => {
       // Send a message with fileName and full path.
       adData.photo = storeFileSmallName(req.file);
     }
-    const ad = new Advertisement({ ...adData, createdAt: Date.now() });
+    const ad = new Advertisement({
+      ...adData,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    await User.checkEmail(ad.userEmail);
 
     const adCreated = await ad.save();
 
     res.status(201).json({
       id: adCreated.id,
       createdAt: adCreated.createdAt,
+      updatedAt: adCreated.updatedAt,
+      userEmail: adCreated.userEmail,
       name: adCreated.name,
       price: adCreated.price,
       sale: adCreated.sale,
       tags: adCreated.tags,
-      photo: adCreated.photo ? "/images/" + adCreated.photo : null,
+      photo: adCreated.photo ? pathImages + adCreated.photo : null,
     });
 
     // microservice that makes a thumbnail of the image
@@ -149,7 +155,8 @@ router.post("/", jwtAuth, async (req, res, next) => {
 router.put("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const adData = req.body;
+    const adData = { ...req.body, updatedAt: Date.now() };
+    adData.userEmail && (await User.checkEmail(adData.userEmail));
 
     const adActualizado = await Advertisement.findOneAndUpdate(
       { _id: _id },
