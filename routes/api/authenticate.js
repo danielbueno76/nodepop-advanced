@@ -39,7 +39,7 @@ router.post("/login", async (req, res, next) => {
 });
 
 // POST /api/auth/signup (body)
-// Create an ad
+// Sign up in the web
 router.post("/signup", async (req, res, next) => {
   try {
     const signupData = req.body;
@@ -66,7 +66,7 @@ router.post("/signup", async (req, res, next) => {
 });
 
 // GET /api/auth/me
-// Obtain an ad
+// Obtain info about user
 router.get("/me", jwtAuth, async (req, res, next) => {
   try {
     const jwtToken = req.headers.authorization;
