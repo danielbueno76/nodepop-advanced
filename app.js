@@ -27,7 +27,7 @@ app.use(i18n.init);
 /**
  * API paths
  */
-app.use("/api/auth/login", require("./routes/api/authenticate"));
+app.use("/api/auth", require("./routes/api/authenticate"));
 app.use(
   `/api/${version_1}/adverts`,
   upload.single("photo"),

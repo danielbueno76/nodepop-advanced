@@ -3,7 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const jwtAuth = require("../../lib/jwtAuth");
+const {jwtAuth} = require("../../lib/jwtAuth");
 const { Advertisement, User } = require("../../models");
 const storeFileSmallName = require("../../lib/storeFileSmallName");
 const cote = require("cote");
@@ -77,7 +77,7 @@ router.get("/", jwtAuth, async function (req, res, next) {
 
 // GET /api/v1/adverts/tags
 // Obtain tags
-router.get("/tags", async (req, res, next) => {
+router.get("/tags", jwtAuth, async (req, res, next) => {
   try {
     const result = await Advertisement.listTags();
     res.json(result);
