@@ -18,14 +18,9 @@ const pathImages = "images/";
 // List of ads
 router.get("/", jwtAuth, async function (req, res, next) {
   try {
-    const name = req.query.name;
-    const price = req.query.price;
-    const sale = req.query.sale;
-    const tags = req.query.tags;
+    const { name, price, sale, tags, fields, sort } = req.query;
     const limit = parseInt(req.query.limit);
     const start = parseInt(req.query.start);
-    const fields = req.query.fields;
-    const sort = req.query.sort;
     const filtro = {};
 
     if (name) {
@@ -145,7 +140,6 @@ router.post("/", jwtAuth, async (req, res, next) => {
       },
       () => {
         console.log(`Finished resizing ${req.file.originalname}`);
-        return;
       }
     );
   } catch (error) {
@@ -187,7 +181,6 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
 
     res.json({ result: adActualizado });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 });
@@ -197,12 +190,18 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
 router.delete("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-
     const { id: userId, username } = await User.findById(
       jwtReturnUser(req.headers.authorization)
     );
-    const { username: usernameAd } = await Advertisement.findById(_id);
-    await User.checkAdBelongToUsername(username, usernameAd);
+
+    const ad = await Advertisement.findById(_id);
+    if (ad) {
+      await User.checkAdBelongToUsername(username, ad.username);
+    } else {
+      const error = new Error("You cannot delete an ad that does not exist.");
+      error.status = 400;
+      throw error;
+    }
 
     await User.findByIdAndUpdate(userId, {
       $pull: { ads: _id.toObjectId() },

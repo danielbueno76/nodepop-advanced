@@ -6,15 +6,15 @@ const request = require("supertest");
 const app = require("../app");
 const usersInit = require("../DB/users.json");
 const adsInit = require("../DB/ads.json");
-const randomString = Math.random().toString(36).substring(7);
-const userToAdd = {
-  username: randomString,
-  email: `${randomString}@example.com`,
-  password: "1234",
-};
 
+let token = "";
 describe("Signup user, authenticate and test it.", () => {
-  let token = "";
+  const randomString = Math.random().toString(36).substring(7);
+  const userToAdd = {
+    username: randomString,
+    email: `${randomString}@example.com`,
+    password: "1234",
+  };
   it("POST /api/auth/signup should return a json response with information of the user that has just registered", function (done) {
     request(app).post("/api/auth/signup").send(userToAdd).expect(201, done);
   });
@@ -31,6 +31,19 @@ describe("Signup user, authenticate and test it.", () => {
         done(err);
       });
   });
+  it("[AUTH] GET /api/auth/me with token should return status 200 and JSON", function (done) {
+    request(app)
+      .get(`/api/auth/me`)
+      .set("Authorization", "Bearer " + token)
+      .expect(200, done);
+  });
+  it("[AUTH] PUT /api/auth/me with token should return status 200 and JSON", function (done) {
+    request(app)
+      .put(`/api/auth/me`)
+      .send({ username: "userX" })
+      .set("Authorization", "Bearer " + token)
+      .expect(200, done);
+  });
   it("DELETE /api/auth/me of an existing user should return 200", function (done) {
     request(app)
       .delete("/api/auth/me")
@@ -39,7 +52,58 @@ describe("Signup user, authenticate and test it.", () => {
   });
 });
 
-let token = "";
+let idAdTemp = "";
+describe("Ads basic operations", () => {
+  it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
+    request(app)
+      .post("/api/auth/login")
+      .send(usersInit[0])
+      .expect(200)
+      .end((err, res) => {
+        token = res.body.accessToken;
+        done(err);
+      });
+  });
+  it("[AUTH] POST /api/v1/adverts with token should return status 201 and JSON", function (done) {
+    request(app)
+      .post(`/api/v1/adverts`)
+      .set("Authorization", "Bearer " + token)
+      .send(adsInit[0])
+      .expect(201)
+      .end((err, res) => {
+        idAdTemp = res.body.id;
+        done(err);
+      });
+  });
+  it("[AUTH] GET /api/v1/adverts/:id with token should return status 200 and JSON", function (done) {
+    request(app)
+      .get(`/api/v1/adverts/${idAdTemp}`)
+      .set("Authorization", "Bearer " + token)
+      .expect(200, done);
+  });
+  it("[AUTH] GET /api/v1/adverts/tags with token should return status 200 and JSON", function (done) {
+    request(app)
+      .get(`/api/v1/adverts/tags`)
+      .set("Authorization", "Bearer " + token)
+      .expect(200, done);
+  });
+  it("[AUTH] PUT /api/v1/adverts/:id with token should return status 200 and JSON", function (done) {
+    request(app)
+      .put(`/api/v1/adverts/${idAdTemp}`)
+      .set("Authorization", "Bearer " + token)
+      .send({ price: 50 })
+      .expect(200, done);
+  });
+  it("[AUTH] DELETE /api/v1/adverts/:id with token should return status 204 and JSON", function (done) {
+    console.log(idAdTemp, token);
+    request(app)
+      .delete(`/api/v1/adverts/${idAdTemp}`)
+      .set("Authorization", "Bearer " + token)
+      .expect(204, done);
+  });
+});
+
+let idAdToTest = "";
 describe("Authentication", () => {
   it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
     request(app)
@@ -51,51 +115,44 @@ describe("Authentication", () => {
         done(err);
       });
   });
-  it("[AUTH] GET /api/auth/me with token should return status 200 and JSON", function (done) {
-    request(app)
-      .get(`/api/auth/me`)
-      .set("Authorization", "Bearer " + token)
-      .expect(200, done);
-  });
+
   it("[AUTH] GET /api/v1/adverts with token should return status 200 and JSON", function (done) {
     request(app)
       .get(`/api/v1/adverts`)
       .set("Authorization", "Bearer " + token)
-      .expect(200, done);
-  });
-});
-
-describe("Ads basic operations", () => {
-  let idAd = "";
-
-  it("[AUTH] POST /api/v1/adverts with token should return status 201 and JSON", function (done) {
-    request(app)
-      .post(`/api/v1/adverts`)
-      .set("Authorization", "Bearer " + token)
-      .send(adsInit[0])
-      .expect(201)
+      .expect(200)
       .end((err, res) => {
-        idAd = res.body.id;
+        idAdToTest = res.body[1].id;
         done(err);
       });
   });
-  it("[AUTH] GET /api/v1/adverts/:id with token should return status 200 and JSON", function (done) {
+});
+
+describe("Ads wrong operations", () => {
+  it("[AUTH] POST /api/v1/adverts with username that does not exist should return status 400", function (done) {
     request(app)
-      .get(`/api/v1/adverts/${idAd}`)
+      .post(`/api/v1/adverts`)
       .set("Authorization", "Bearer " + token)
-      .expect(200, done);
+      .send({ ...adsInit[0], username: "userNotExist" })
+      .expect(400, done);
   });
-  it("[AUTH] PUT /api/v1/adverts/:id with token should return status 200 and JSON", function (done) {
+  it("[AUTH] PUT /api/v1/adverts/:id of an ad that does not belong to the current user should return status 403 and JSON", function (done) {
     request(app)
-      .put(`/api/v1/adverts/${idAd}`)
+      .put(`/api/v1/adverts/${idAdToTest}`)
       .set("Authorization", "Bearer " + token)
       .send({ price: 50 })
-      .expect(200, done);
+      .expect(403, done);
   });
-  it("[AUTH] DELETE /api/v1/adverts/:id with token should return status 204 and JSON", function (done) {
+  it("[AUTH] DELETE /api/v1/adverts/:id of an ad that does not belong to the current user should return status 400 and JSON", function (done) {
     request(app)
-      .delete(`/api/v1/adverts/${idAd}`)
+      .delete(`/api/v1/adverts/${idAdToTest}`)
       .set("Authorization", "Bearer " + token)
-      .expect(204, done);
+      .expect(403, done);
+  });
+  it("[AUTH] DELETE /api/v1/adverts/:id of an ad that does not exist should return status 404 and JSON", function (done) {
+    request(app)
+      .delete(`/api/v1/adverts/${idAdTemp}`)
+      .set("Authorization", "Bearer " + token)
+      .expect(400, done);
   });
 });
