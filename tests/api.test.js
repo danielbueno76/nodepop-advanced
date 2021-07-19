@@ -31,21 +31,6 @@ describe("Signup user, authenticate and test it.", () => {
         done(err);
       });
   });
-  it("POST /api/auth/login without body should return 401", function (done) {
-    request(app).post("/api/auth/login").send({}).expect(401, done);
-  });
-  it("[AUTH] GET /api/auth/me with token should return status 200 and JSON", function (done) {
-    request(app)
-      .get(`/api/auth/me`)
-      .set("Authorization", "Bearer " + token)
-      .expect(200, done);
-  });
-  it("[AUTH] GET /api/v1/adverts with token should return status 200 and JSON", function (done) {
-    request(app)
-      .get(`/api/v1/adverts`)
-      .set("Authorization", "Bearer " + token)
-      .expect(200, done);
-  });
   it("DELETE /api/auth/me of an existing user should return 200", function (done) {
     request(app)
       .delete("/api/auth/me")
@@ -54,8 +39,8 @@ describe("Signup user, authenticate and test it.", () => {
   });
 });
 
+let token = "";
 describe("Authentication", () => {
-  let token = "";
   it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
     request(app)
       .post("/api/auth/login")
@@ -80,19 +65,9 @@ describe("Authentication", () => {
   });
 });
 
-describe("Ads operations", () => {
-  let token = "";
+describe("Ads basic operations", () => {
   let idAd = "";
-  it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
-    request(app)
-      .post("/api/auth/login")
-      .send(usersInit[0])
-      .expect(200)
-      .end((err, res) => {
-        token = res.body.accessToken;
-        done(err);
-      });
-  });
+
   it("[AUTH] POST /api/v1/adverts with token should return status 201 and JSON", function (done) {
     request(app)
       .post(`/api/v1/adverts`)
