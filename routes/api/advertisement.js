@@ -205,7 +205,7 @@ router.delete("/:id", jwtAuth, async (req, res, next) => {
     });
     await Advertisement.deleteOne({ _id: _id });
 
-    res.json("Ad deleted correctly");
+    res.status(204).json("Ad deleted correctly");
   } catch (error) {
     next(error);
   }

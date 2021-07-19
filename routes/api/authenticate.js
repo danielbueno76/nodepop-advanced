@@ -174,7 +174,7 @@ router.delete("/me", jwtAuth, async (req, res, next) => {
       await Advertisement.deleteOne({ _id: ad });
     }
     await User.deleteOne({ _id: userId });
-    res.json("User deleted correctly");
+    res.status(204).json("User deleted correctly");
   } catch (error) {
     next(error);
   }
