@@ -47,10 +47,11 @@ router.post("/signup", async (req, res, next) => {
     const signup = new User({
       ...signupData,
       ads: [],
+      adsFav: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
-
+    signup.password = await User.hashPassword(signup.password);
     const signupCreated = await signup.save();
 
     res.status(201).json(signupCreated);
@@ -130,17 +131,21 @@ router.put("/me", jwtAuth, async (req, res, next) => {
 // Add or delete fav ad to the list of the user
 router.put("/me/fav", jwtAuth, async (req, res, next) => {
   try {
-    const operationFav = req.query.fav;
+    const operationFav = req.query.action;
     const userId = jwtReturnUser(req.headers.authorization);
     const { idAdFav } = { ...req.body };
     if (!idAdFav || !operationFav) {
       const errorAdFav = new Error(
-        "The structure to add the ad to the list of favorites is incorrect. You should send a json object with the id of the ad (idAdFav) and a query if you want to add or delete the ad of the fav list."
+        "The structure to add the ad to the list of favorites is incorrect. You should send a json object with the id of the ad (idAdFav) and a query(action=add or action=delete) if you want to add or delete the ad of the fav list."
       );
       errorAdFav.status = 400;
       throw errorAdFav;
     }
-
+    if (!(await Advertisement.findById(idAdFav))) {
+      const errorNotExistAd = new Error(`The ad ${idAdFav} does not exist.`);
+      errorNotExistAd.status = 400;
+      throw errorNotExistAd;
+    }
     operationFav === "add" &&
       (await User.findByIdAndUpdate(userId, {
         $push: { adsFav: idAdFav.toObjectId() },

@@ -7,7 +7,7 @@ String.prototype.toObjectId = function () {
 
 const express = require("express");
 const router = express.Router();
-const { jwtAuth } = require("../../lib/jwtAuth");
+const { jwtAuth, jwtReturnUser } = require("../../lib/jwtAuth");
 const { Advertisement, User } = require("../../models");
 const storeFileSmallName = require("../../lib/storeFileSmallName");
 const cote = require("cote");
@@ -95,7 +95,7 @@ router.get("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
 
-    const ad = await Advertisement.findOne({ _id: _id });
+    const ad = await Advertisement.findById(_id);
 
     if (!ad) {
       return res.status(404).json({ error: "not found" });
@@ -158,10 +158,11 @@ router.post("/", jwtAuth, async (req, res, next) => {
 router.put("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-    await User.checkAdBelongToUser(
-      jwtReturnUser(req.headers.authorization),
-      _id
+    const { username } = await User.findById(
+      jwtReturnUser(req.headers.authorization)
     );
+    const { username: usernameAd } = await Advertisement.findById(_id);
+    await User.checkAdBelongToUsername(username, usernameAd);
 
     const adData = { ...req.body, updatedAt: Date.now() };
     if (adData.username) {
@@ -186,6 +187,7 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
 
     res.json({ result: adActualizado });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 });
@@ -195,10 +197,12 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
 router.delete("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const { id: userId } = await User.findOne({
-      ads: _id.toObjectId(),
-    });
-    await User.checkAdBelongToUser(userId, _id);
+
+    const { id: userId, username } = await User.findById(
+      jwtReturnUser(req.headers.authorization)
+    );
+    const { username: usernameAd } = await Advertisement.findById(_id);
+    await User.checkAdBelongToUsername(username, usernameAd);
 
     await User.findByIdAndUpdate(userId, {
       $pull: { ads: _id.toObjectId() },
