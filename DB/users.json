@@ -3,12 +3,14 @@
     "username": "user1",
     "email": "user1@example.com",
     "password": "1234",
-    "ads": []
+    "ads": [],
+    "adsFav": []
   },
   {
     "username": "user2",
     "email": "user2@example.com",
     "password": "1234",
-    "ads": []
+    "ads": [],
+    "adsFav": []
   }
 ]

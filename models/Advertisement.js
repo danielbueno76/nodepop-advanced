@@ -2,7 +2,6 @@
 
 const mongoose = require("mongoose");
 const TAGS = ["lifestyle", "motor", "mobile", "work"];
-const { User } = require("./User");
 
 // we define a schema for our document
 const advertisementSchema = mongoose.Schema({
@@ -22,6 +21,10 @@ const advertisementSchema = mongoose.Schema({
     index: true,
     required: [true, "The price is mandatory"],
   },
+  description: {
+    type: String,
+    required: [true, "The description is mandatory"],
+  },
   photo: String,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -36,10 +39,18 @@ const advertisementSchema = mongoose.Schema({
     validate: (v) => Array.isArray(v) && v.length > 0,
     index: true,
   },
-  userEmail: {
+  username: {
     type: String,
-    required: [true, "The user email is mandatory"],
+    required: [true, "The username is mandatory"],
     index: true,
+  },
+  booked: {
+    type: Boolean,
+    default: false,
+  },
+  sold: {
+    type: Boolean,
+    default: false,
   },
 });
 

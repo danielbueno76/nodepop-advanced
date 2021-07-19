@@ -13,7 +13,7 @@ const usersInit = require("./users.json");
 conn.once("open", async () => {
   try {
     await initUsers();
-    await initAdsNodepop();
+    await initAds();
     console.log("The initialization of the database has been successfully.");
     conn.close();
   } catch (err) {
@@ -22,21 +22,27 @@ conn.once("open", async () => {
   }
 });
 
-async function initAdsNodepop() {
+async function initAds() {
   await Advertisement.deleteMany();
   const adsInserted = await Advertisement.insertMany(
     await Promise.all(
       adsInit.map(async (adInit) => {
-        await User.checkEmail(adInit.userEmail);
-
+        await User.checkUser(adInit.username);
         return { ...adInit, createdAt: Date.now(), updatedAt: Date.now() };
       })
     )
   );
   for (const adInserted of adsInserted) {
     await User.updateOne(
-      { email: adInserted.userEmail },
+      { username: adInserted.username },
       { $push: { ads: adInserted.id } }
+    );
+  }
+
+  for (let i = adsInserted.length - 1; i >= 0; i--) {
+    await User.updateOne(
+      { username: adsInserted[i].username },
+      { $push: { adsFav: adsInserted[i === 0 ? i + 1 : i - 1].id } }
     );
   }
 

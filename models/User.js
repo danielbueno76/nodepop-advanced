@@ -2,6 +2,10 @@
 
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const { Advertisement } = require("./Advertisement");
+
+const reEmail =
+  /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const userSchema = mongoose.Schema({
   username: {
@@ -14,22 +18,39 @@ const userSchema = mongoose.Schema({
     type: String,
     unique: true,
     index: true,
+    validate: {
+      validator: function (v) {
+        return reEmail.test(v);
+      },
+      message: (props) => `${props.value} is not a valid email!`,
+    },
     required: [true, "The email is mandatory"],
   },
   password: { type: String, required: [true, "The password is mandatory"] },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  ads: { type: [mongoose.ObjectId], index: true },
+  ads: { type: [String], index: true },
+  adsFav: { type: [String], index: true },
 });
 
-userSchema.statics.checkEmail = async function (email) {
-  const user = await User.findOne({ email });
+userSchema.statics.checkUser = async function (username) {
+  const user = await User.findOne({ username });
   if (!user) {
-    const emailError = new Error(
-      `The email ${email} of this user does not exist`
+    const userError = new Error(`The username ${username} does not exist.`);
+    userError.status = 400;
+    throw userError;
+  }
+};
+
+userSchema.statics.checkAdBelongToUser = async function (userId, adId) {
+  const { username } = await User.findById(userId);
+  const { username: usernameAd } = await Advertisement.findById(adId);
+  if (!username.localeCompare(usernameAd)) {
+    const error = new Error(
+      "You cannot update this ad because you are not the owner."
     );
-    emailError.status = 400;
-    throw emailError;
+    error.status = 403;
+    throw error;
   }
 };
 

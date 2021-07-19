@@ -1,13 +1,16 @@
 "use strict";
+const mongoose = require("mongoose");
+
+String.prototype.toObjectId = function () {
+  return new mongoose.Types.ObjectId(this.toString());
+};
 
 const express = require("express");
 const router = express.Router();
-const mongoose = require("mongoose");
-const {jwtAuth} = require("../../lib/jwtAuth");
+const { jwtAuth } = require("../../lib/jwtAuth");
 const { Advertisement, User } = require("../../models");
 const storeFileSmallName = require("../../lib/storeFileSmallName");
 const cote = require("cote");
-const { Mongoose } = require("mongoose");
 const requester = new cote.Requester({ name: "image client" });
 const pathImages = "images/";
 
@@ -118,7 +121,7 @@ router.post("/", jwtAuth, async (req, res, next) => {
       updatedAt: Date.now(),
     });
 
-    await User.checkEmail(ad.userEmail);
+    await User.checkUser(ad.username);
 
     const adCreated = await ad.save();
 
@@ -126,7 +129,7 @@ router.post("/", jwtAuth, async (req, res, next) => {
       id: adCreated.id,
       createdAt: adCreated.createdAt,
       updatedAt: adCreated.updatedAt,
-      userEmail: adCreated.userEmail,
+      username: adCreated.username,
       name: adCreated.name,
       price: adCreated.price,
       sale: adCreated.sale,
@@ -155,8 +158,17 @@ router.post("/", jwtAuth, async (req, res, next) => {
 router.put("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
+    await User.checkAdBelongToUser(
+      jwtReturnUser(req.headers.authorization),
+      _id
+    );
+
     const adData = { ...req.body, updatedAt: Date.now() };
-    adData.userEmail && (await User.checkEmail(adData.userEmail));
+    if (adData.username) {
+      const errorUsername = new Error("Cannot update username");
+      errorUsername.status = 400;
+      throw errorUsername;
+    }
 
     const adActualizado = await Advertisement.findOneAndUpdate(
       { _id: _id },
@@ -183,10 +195,17 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
 router.delete("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
+    const { id: userId } = await User.findOne({
+      ads: _id.toObjectId(),
+    });
+    await User.checkAdBelongToUser(userId, _id);
 
+    await User.findByIdAndUpdate(userId, {
+      $pull: { ads: _id.toObjectId() },
+    });
     await Advertisement.deleteOne({ _id: _id });
 
-    res.json();
+    res.json("Ad deleted correctly");
   } catch (error) {
     next(error);
   }
