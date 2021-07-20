@@ -53,6 +53,7 @@ describe("Signup user, authenticate and test it.", () => {
 });
 
 let idAdTemp = "";
+let idAdToTest = "";
 describe("Ads basic operations", () => {
   it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
     request(app)
@@ -75,6 +76,15 @@ describe("Ads basic operations", () => {
         done(err);
       });
   });
+  it("[AUTH] GET /api/v1/adverts with token should return status 200 and JSON", function (done) {
+    request(app)
+      .get(`/api/v1/adverts`)
+      .expect(200)
+      .end((err, res) => {
+        idAdToTest = res.body[1].id;
+        done(err);
+      });
+  });
   it("[AUTH] GET /api/v1/adverts/:id with token should return status 200 and JSON", function (done) {
     request(app)
       .get(`/api/v1/adverts/${idAdTemp}`)
@@ -82,10 +92,7 @@ describe("Ads basic operations", () => {
       .expect(200, done);
   });
   it("[AUTH] GET /api/v1/adverts/tags with token should return status 200 and JSON", function (done) {
-    request(app)
-      .get(`/api/v1/adverts/tags`)
-      .set("Authorization", "Bearer " + token)
-      .expect(200, done);
+    request(app).get(`/api/v1/adverts/tags`).expect(200, done);
   });
   it("[AUTH] PUT /api/v1/adverts/:id with token should return status 200 and JSON", function (done) {
     request(app)
@@ -102,36 +109,10 @@ describe("Ads basic operations", () => {
       .expect(200, done);
   });
   it("[AUTH] DELETE /api/v1/adverts/:id with token should return status 204 and JSON", function (done) {
-    console.log(idAdTemp, token);
     request(app)
       .delete(`/api/v1/adverts/${idAdTemp}`)
       .set("Authorization", "Bearer " + token)
       .expect(204, done);
-  });
-});
-
-let idAdToTest = "";
-describe("Authentication", () => {
-  it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
-    request(app)
-      .post("/api/auth/login")
-      .send(usersInit[0])
-      .expect(200)
-      .end((err, res) => {
-        token = res.body.accessToken;
-        done(err);
-      });
-  });
-
-  it("[AUTH] GET /api/v1/adverts with token should return status 200 and JSON", function (done) {
-    request(app)
-      .get(`/api/v1/adverts`)
-      .set("Authorization", "Bearer " + token)
-      .expect(200)
-      .end((err, res) => {
-        idAdToTest = res.body[1].id;
-        done(err);
-      });
   });
 });
 

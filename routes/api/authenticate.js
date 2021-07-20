@@ -6,6 +6,8 @@ const { User, Advertisement } = require("../../models");
 const jwt = require("jsonwebtoken");
 const { jwtAuth, jwtReturnUser } = require("../../lib/jwtAuth");
 const EXPIRED_TIME = "12h";
+const USER_EMAIL_UNIQUE = "username and/or email already exists.";
+
 // POST /api/auth/login (body)
 // Return JWT token
 router.post("/login", async (req, res, next) => {
@@ -57,7 +59,7 @@ router.post("/signup", async (req, res, next) => {
     res.status(201).json(signupCreated);
   } catch (error) {
     if (error.name === "MongoError" && error.code === 11000) {
-      const customError = new Error("username and email must be unique!");
+      const customError = new Error(USER_EMAIL_UNIQUE);
       customError.status = 400;
       next(customError);
     } else {
@@ -119,7 +121,7 @@ router.put("/me", jwtAuth, async (req, res, next) => {
     res.json({ result: userActualizado });
   } catch (error) {
     if (error.name === "MongoError" && error.code === 11000) {
-      const customError = new Error("username and email must be unique!");
+      const customError = new Error(USER_EMAIL_UNIQUE);
       customError.status = 400;
       next(customError);
     } else {

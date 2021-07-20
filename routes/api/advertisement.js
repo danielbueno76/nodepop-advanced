@@ -16,7 +16,7 @@ const pathImages = "images/";
 
 /* GET /api/v1/adverts */
 // List of ads
-router.get("/", jwtAuth, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
   try {
     const { name, price, sale, tags, fields, sort } = req.query;
     const limit = parseInt(req.query.limit);
@@ -75,7 +75,7 @@ router.get("/", jwtAuth, async function (req, res, next) {
 
 // GET /api/v1/adverts/tags
 // Obtain tags
-router.get("/tags", jwtAuth, async (req, res, next) => {
+router.get("/tags", async (req, res, next) => {
   try {
     const result = await Advertisement.listTags();
     res.json(result);
