@@ -66,7 +66,11 @@ advertisementSchema.statics.list = function (
   query.limit(limit);
   query.skip(skip);
   query.select(fields);
-  query.sort(sort);
+  if (sort instanceof Array && sort.length === 2) {
+    query.sort([[sort[0], sort[1]]]);
+  } else {
+    query.sort(sort);
+  }
   return query.exec();
 };
 
