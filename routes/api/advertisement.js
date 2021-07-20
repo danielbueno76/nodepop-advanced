@@ -58,12 +58,12 @@ router.get("/", async function (req, res, next) {
       result.map((elem) => {
         return {
           id: elem.id,
-          createdAt: elem.createdAt.toString(),
-          updatedAt: elem.updatedAt.toString(),
           name: elem.name,
           price: elem.price,
+          description: elem.description,
           sale: elem.sale,
           tags: elem.tags,
+          username: elem.username,
           photo: elem.photo ? pathImages + elem.photo : null,
         };
       })
