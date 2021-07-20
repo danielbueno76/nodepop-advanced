@@ -12,7 +12,7 @@ const { Advertisement, User } = require("../../models");
 const storeFileSmallName = require("../../lib/storeFileSmallName");
 const cote = require("cote");
 const requester = new cote.Requester({ name: "image client" });
-const pathImages = "images/";
+const pathImages = "/images/";
 
 /* GET /api/v1/adverts */
 // List of ads
