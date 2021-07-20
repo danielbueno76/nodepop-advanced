@@ -65,6 +65,8 @@ router.get("/", async function (req, res, next) {
           description: elem.description,
           sale: elem.sale,
           tags: elem.tags,
+          booked: elem.booked,
+          sold: elem.sold,
           username: elem.username,
           photo: elem.photo ? pathImages + elem.photo : null,
         };
@@ -88,16 +90,28 @@ router.get("/tags", async (req, res, next) => {
 
 // GET /api/v1/adverts/:id
 // Obtain an ad
-router.get("/:id", jwtAuth, async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const _id = req.params.id;
 
     const ad = await Advertisement.findById(_id);
-
     if (!ad) {
       return res.status(404).json({ error: "not found" });
     }
-    res.json({ result: ad });
+    res.status(200).json({
+      id: ad.id,
+      createdAt: ad.createdAt.toString(),
+      updatedAt: ad.updatedAt.toString(),
+      name: ad.name,
+      price: ad.price,
+      description: ad.description,
+      sale: ad.sale,
+      tags: ad.tags,
+      username: ad.username,
+      booked: ad.booked,
+      sold: ad.sold,
+      photo: ad.photo ? pathImages + ad.photo : null,
+    });
   } catch (err) {
     next(err);
   }
