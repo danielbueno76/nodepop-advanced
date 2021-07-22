@@ -67,7 +67,7 @@ advertisementSchema.statics.list = function (
   query.skip(skip);
   query.select(fields);
   if (sort instanceof Array && sort.length === 2) {
-    query.sort([[sort[0], sort[1]]]);
+    query.sort([sort]);
   } else {
     query.sort(sort);
   }
