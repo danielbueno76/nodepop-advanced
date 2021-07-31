@@ -1,10 +1,8 @@
 "use strict";
+/**
+ * Endpoints related to advertisements
+ */
 const mongoose = require("mongoose");
-
-String.prototype.toObjectId = function () {
-  return new mongoose.Types.ObjectId(this.toString());
-};
-
 const express = require("express");
 const router = express.Router();
 const { jwtAuth, jwtReturnUser } = require("../../lib/jwtAuth");
@@ -13,6 +11,9 @@ const storeFileSmallName = require("../../lib/storeFileSmallName");
 const cote = require("cote");
 const requester = new cote.Requester({ name: "image client" });
 const pathImages = "/images/";
+const {
+  consts: { ERROR_CAUSE, ERROR_NOT_FOUND, ID },
+} = require("../../utils");
 
 /* GET /api/v1/adverts */
 // List of ads
@@ -94,9 +95,11 @@ router.get("/:id", async (req, res, next) => {
   try {
     const _id = req.params.id;
 
-    const ad = await Advertisement.findById(_id);
+    const ad = await Advertisement.findOne({
+      [ID]: mongoose.Types.ObjectId(_id),
+    });
     if (!ad) {
-      return res.status(404).json({ error: "not found" });
+      return res.status(404).json({ [ERROR_CAUSE]: ERROR_NOT_FOUND });
     }
     res.status(200).json({
       id: ad.id,
@@ -132,7 +135,13 @@ router.post("/", jwtAuth, async (req, res, next) => {
       updatedAt: Date.now(),
     });
 
-    await User.checkUser(ad.username);
+    if (!(await User.doesUserExist(ad.username))) {
+      return res.status(400).json({
+        [ERROR_CAUSE]: ad.username
+          ? `The username ${ad.username} does not exist.`
+          : "You must introduce the username who created this ad.",
+      });
+    }
 
     const adCreated = await ad.save();
 
@@ -168,21 +177,30 @@ router.post("/", jwtAuth, async (req, res, next) => {
 router.put("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const { username } = await User.findById(
-      jwtReturnUser(req.headers.authorization)
-    );
-    const { username: usernameAd } = await Advertisement.findById(_id);
-    await User.checkAdBelongToUsername(username, usernameAd);
-
+    const { username } = await User.findOne({
+      [ID]: mongoose.Types.ObjectId(jwtReturnUser(req.headers.authorization)),
+    });
+    const ad = await Advertisement.findOne({
+      [ID]: mongoose.Types.ObjectId(_id),
+    });
+    if (!(await User.checkAdBelongToUsername(username, ad))) {
+      return res.status(403).json({
+        [ERROR_CAUSE]:
+          "You cannot update this ad because you are not the owner.",
+      });
+    }
+    if (!ad) {
+      return res.status(404).json({
+        [ERROR_CAUSE]: "You cannot delete an ad that does not exist.",
+      });
+    }
     const adData = { ...req.body, updatedAt: Date.now() };
     if (adData.username) {
-      const errorUsername = new Error("Cannot update username");
-      errorUsername.status = 400;
-      throw errorUsername;
+      return res.status(400).json({ [ERROR_CAUSE]: "Cannot update username" });
     }
 
     const adActualizado = await Advertisement.findOneAndUpdate(
-      { _id: _id },
+      { [ID]: mongoose.Types.ObjectId(_id) },
       adData,
       {
         new: true,
@@ -191,7 +209,7 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
     );
 
     if (!adActualizado) {
-      res.status(404).json({ error: "not found" });
+      res.status(404).json({ [ERROR_CAUSE]: ERROR_NOT_FOUND });
       return;
     }
 
@@ -206,23 +224,30 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
 router.delete("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const { id: userId, username } = await User.findById(
-      jwtReturnUser(req.headers.authorization)
-    );
+    const { id: userId, username } = await User.findOne({
+      [ID]: mongoose.Types.ObjectId(jwtReturnUser(req.headers.authorization)),
+    });
 
-    const ad = await Advertisement.findById(_id);
-    if (ad) {
-      await User.checkAdBelongToUsername(username, ad.username);
-    } else {
-      const error = new Error("You cannot delete an ad that does not exist.");
-      error.status = 400;
-      throw error;
+    const ad = await Advertisement.findOne({
+      [ID]: mongoose.Types.ObjectId(_id),
+    });
+    if (!ad) {
+      return res.status(404).json({
+        [ERROR_CAUSE]: "You cannot delete an ad that does not exist.",
+      });
+    }
+
+    if (!(await User.checkAdBelongToUsername(username, ad))) {
+      return res.status(403).json({
+        [ERROR_CAUSE]:
+          "You cannot update this ad because you are not the owner.",
+      });
     }
 
     await User.findByIdAndUpdate(userId, {
-      $pull: { ads: _id.toObjectId() },
+      $pull: { ads: mongoose.Types.ObjectId(_id) },
     });
-    await Advertisement.deleteOne({ _id: _id });
+    await Advertisement.deleteOne({ [ID]: mongoose.Types.ObjectId(_id) });
 
     res.status(204).json("Ad deleted correctly");
   } catch (error) {

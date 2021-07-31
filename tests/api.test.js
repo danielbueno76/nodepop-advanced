@@ -137,11 +137,21 @@ describe("Ads wrong operations", () => {
       .set("Authorization", "Bearer " + token)
       .expect(403, done);
   });
+  it("POST /api/auth/login should return a json response with a token JWT and status 200", function (done) {
+    request(app)
+      .post("/api/auth/login")
+      .send(usersInit[0])
+      .expect(200)
+      .end((err, res) => {
+        token = res.body.accessToken;
+        done(err);
+      });
+  });
   it("[AUTH] DELETE /api/v1/adverts/:id of an ad that does not exist should return status 404", function (done) {
     request(app)
       .delete(`/api/v1/adverts/${idAdTemp}`)
       .set("Authorization", "Bearer " + token)
-      .expect(400, done);
+      .expect(404, done);
   });
 });
 

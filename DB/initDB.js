@@ -27,8 +27,9 @@ async function initAds() {
   const adsInserted = await Advertisement.insertMany(
     await Promise.all(
       adsInit.map(async (adInit) => {
-        await User.checkUser(adInit.username);
-        return { ...adInit, createdAt: Date.now(), updatedAt: Date.now() };
+        if (await User.doesUserExist(adInit.username)) {
+          return { ...adInit, createdAt: Date.now(), updatedAt: Date.now() };
+        }
       })
     )
   );

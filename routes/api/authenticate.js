@@ -1,12 +1,16 @@
 "use strict";
-
+/**
+ * Endpoints related to an user
+ */
+const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
 const { User, Advertisement } = require("../../models");
 const jwt = require("jsonwebtoken");
 const { jwtAuth, jwtReturnUser } = require("../../lib/jwtAuth");
-const EXPIRED_TIME = "12h";
-const USER_EMAIL_UNIQUE = "username and/or email already exists.";
+const {
+  consts: { EXPIRED_TIME, USER_EMAIL_UNIQUE, ERROR_CAUSE, ERROR_NOT_FOUND, ID },
+} = require("../../utils");
 
 // POST /api/auth/login (body)
 // Return JWT token
@@ -24,7 +28,7 @@ router.post("/login", async (req, res, next) => {
 
     // create token JWT (signed)
     jwt.sign(
-      { _id: user._id },
+      { [ID]: user._id },
       process.env.JWT_SECRET,
       { expiresIn: EXPIRED_TIME },
       (err, jwtToken) => {
@@ -73,7 +77,10 @@ router.post("/signup", async (req, res, next) => {
 router.get("/me", jwtAuth, async (req, res, next) => {
   try {
     const userId = jwtReturnUser(req.headers.authorization);
-    const user = await User.findById(userId);
+    const user = await User.findOne({ [ID]: mongoose.Types.ObjectId(userId) });
+    if (!user) {
+      return res.status(400).json({ [ERROR_CAUSE]: "Wrong user" });
+    }
     res.json({
       id: user.id,
       username: user.username,
@@ -95,26 +102,23 @@ router.put("/me", jwtAuth, async (req, res, next) => {
     const userId = jwtReturnUser(req.headers.authorization);
     const userData = { ...req.body, updatedAt: Date.now() };
     if (userData.ads || userData.adsFav || userData.createdAt) {
-      const errorAds = new Error(
-        "You only can update your email, user or password"
-      );
-      errorAds.status = 400;
-      throw errorAds;
+      return res.status(400).json({
+        [ERROR_CAUSE]: "You only can update your email, user or password",
+      });
     }
     if (userData.password) {
       userData.password = await User.hashPassword(userData.password);
     }
     const userActualizado = await User.findOneAndUpdate(
-      { _id: userId },
+      { [ID]: mongoose.Types.ObjectId(userId) },
       userData,
       {
         new: true,
         useFindAndModify: false,
       }
     );
-
     if (!userActualizado) {
-      res.status(404).json({ error: "not found" });
+      res.status(404).json({ [ERROR_CAUSE]: ERROR_NOT_FOUND });
       return;
     }
 
@@ -137,26 +141,25 @@ router.put("/me/fav", jwtAuth, async (req, res, next) => {
     const userId = jwtReturnUser(req.headers.authorization);
     const { idAdFav } = { ...req.body };
     if (!idAdFav || !operationFav) {
-      const errorAdFav = new Error(
-        "The structure to add the ad to the list of favorites is incorrect. You should send a json object with the id of the ad (idAdFav) and a query(action=add or action=delete) if you want to add or delete the ad of the fav list."
-      );
-      errorAdFav.status = 400;
-      throw errorAdFav;
+      return res.status(400).json({
+        [ERROR_CAUSE]:
+          "The structure to add the ad to the list of favorites is incorrect. You should send a json object with the id of the ad (idAdFav) and a query(action=add or action=delete) if you want to add or delete the ad of the fav list.",
+      });
     }
     if (!(await Advertisement.findById(idAdFav))) {
-      const errorNotExistAd = new Error(`The ad ${idAdFav} does not exist.`);
-      errorNotExistAd.status = 400;
-      throw errorNotExistAd;
+      return res.status(400).json({
+        [ERROR_CAUSE]: `The ad ${idAdFav} does not exist.`,
+      });
     }
     operationFav === "add" &&
       (await User.findByIdAndUpdate(userId, {
-        $push: { adsFav: idAdFav.toObjectId() },
+        $push: { adsFav: mongoose.Types.ObjectId(idAdFav) },
         updatedAt: Date.now(),
       }));
 
     operationFav === "delete" &&
       (await User.findByIdAndUpdate(userId, {
-        $pull: { adsFav: idAdFav.toObjectId() },
+        $pull: { adsFav: mongoose.Types.ObjectId(idAdFav) },
         updatedAt: Date.now(),
       }));
 
@@ -176,14 +179,17 @@ router.delete("/me", jwtAuth, async (req, res, next) => {
   try {
     const userId = jwtReturnUser(req.headers.authorization);
 
-    const { ads } = await User.findById(userId);
+    const { ads } = await User.findOne({
+      [ID]: mongoose.Types.ObjectId(userId),
+    });
     for (const ad of ads) {
-      await Advertisement.deleteOne({ _id: ad });
+      await Advertisement.deleteOne({ [ID]: ad });
     }
-    await User.deleteOne({ _id: userId });
+    await User.deleteOne({ [ID]: userId });
     res.status(204).json("User deleted correctly");
   } catch (error) {
     next(error);
   }
 });
+
 module.exports = router;

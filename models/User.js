@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const { Advertisement } = require("./Advertisement");
+const emailTransportConfigure = require("../lib/emailTransportConfigure");
 
 const reEmail =
   /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -33,30 +33,19 @@ const userSchema = mongoose.Schema({
   adsFav: { type: [String], index: true },
 });
 
-userSchema.statics.checkUser = async function (username) {
+userSchema.statics.doesUserExist = async function (username) {
   const user = await User.findOne({ username });
-  if (!user) {
-    const userError = new Error(
-      username
-        ? `The username ${username} does not exist.`
-        : "You must introduce the username who created this ad."
-    );
-    userError.status = 400;
-    throw userError;
+  if (user) {
+    return true;
   }
+  return false;
 };
 
-userSchema.statics.checkAdBelongToUsername = async function (
-  username,
-  usernameAd
-) {
-  if (username.localeCompare(usernameAd)) {
-    const error = new Error(
-      "You cannot update this ad because you are not the owner."
-    );
-    error.status = 403;
-    throw error;
+userSchema.statics.checkAdBelongToUsername = async function (username, ad) {
+  if (username && username.localeCompare(ad.username) == 0) {
+    return true;
   }
+  return false;
 };
 
 // it won't work with arrow functions
@@ -66,6 +55,17 @@ userSchema.statics.hashPassword = function (passwordNotEncrypted) {
 
 userSchema.methods.comparePassword = function (passwordNotEncrypted) {
   return bcrypt.compare(passwordNotEncrypted, this.password);
+};
+
+userSchema.methods.sendEmail = async function (subject, body) {
+  const transport = await emailTransportConfigure();
+
+  return transport.sendMail({
+    from: process.env.EMAIL_SERVICE_FROM,
+    to: this.email,
+    subject,
+    html: body,
+  });
 };
 
 const User = mongoose.model("User", userSchema);
