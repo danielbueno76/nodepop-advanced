@@ -35,7 +35,6 @@ const userSchema = mongoose.Schema({
 
 userSchema.statics.doesUserExist = async function (username) {
   const user = await this.findOne({ username });
-  console.log(user);
   if (user) {
     return true;
   }
