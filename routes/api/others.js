@@ -17,6 +17,10 @@ router.get("/forgotPassword", async (req, res, next) => {
       return res.status(400).json({ [ERROR_CAUSE]: "" });
     }
     res.status(200).json("");
+    await User.sendEmail(
+      "Reset your password",
+      "Password or url, I will think it."
+    );
   } catch (err) {
     next(err);
   }
