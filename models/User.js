@@ -59,7 +59,6 @@ userSchema.methods.comparePassword = function (passwordNotEncrypted) {
 
 userSchema.methods.sendEmail = async function (subject, body) {
   const transport = await emailTransportConfigure();
-
   return transport.sendMail({
     from: process.env.EMAIL_SERVICE_FROM,
     to: this.email,
