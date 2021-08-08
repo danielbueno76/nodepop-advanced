@@ -125,23 +125,27 @@ router.get("/:id", async (req, res, next) => {
 router.post("/", jwtAuth, async (req, res, next) => {
   try {
     const adData = req.body;
+    const userId = jwtReturnUser(req.headers.authorization);
+    const user = await User.findOne({ [ID]: mongoose.Types.ObjectId(userId) });
+
     if (req.file) {
       // Send a message with fileName and full path.
       adData.photo = storeFileSmallName(req.file);
     }
-    const ad = new Advertisement({
-      ...adData,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
 
-    if (!(await User.doesUserExist(ad.username))) {
+    if (!user) {
       return res.status(400).json({
-        [ERROR_CAUSE]: ad.username
-          ? `The username ${ad.username} does not exist.`
+        [ERROR_CAUSE]: user
+          ? `The username ${user} does not exist.`
           : "You must introduce the username who created this ad.",
       });
     }
+    const ad = new Advertisement({
+      ...adData,
+      username: user.username,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
 
     const adCreated = await ad.save();
 
