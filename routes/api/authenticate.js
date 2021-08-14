@@ -6,9 +6,15 @@ const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
 const { User, Advertisement } = require("../../models");
-const { jwtAuth, jwtReturnUser, jwtSignLogin } = require("../../lib/jwtAuth");
+const { jwtAuth, jwtReturnUser, jwtSign } = require("../../lib/jwtAuth");
 const {
-  consts: { USER_EMAIL_UNIQUE, ERROR_CAUSE, ERROR_NOT_FOUND, ID },
+  consts: {
+    USER_EMAIL_UNIQUE,
+    ERROR_CAUSE,
+    ERROR_NOT_FOUND,
+    ID,
+    EXPIRED_TIME_LOGIN,
+  },
 } = require("../../utils");
 
 // POST /api/auth/login (body)
@@ -26,7 +32,7 @@ router.post("/login", async (req, res, next) => {
     }
 
     // create token JWT (signed)
-    const jwtToken = await jwtSignLogin(user);
+    const jwtToken = await jwtSign(user, EXPIRED_TIME_LOGIN);
     res.json({ accessToken: jwtToken });
   } catch (error) {
     next(error);

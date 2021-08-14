@@ -7,9 +7,9 @@ const express = require("express");
 const { User } = require("../../models");
 const router = express.Router();
 const {
-  consts: { ERROR_CAUSE },
+  consts: { ERROR_CAUSE, EXPIRED_TIME_RESET_PASSWORD },
 } = require("../../utils");
-const { jwtSignLogin } = require("../../lib/jwtAuth");
+const { jwtSign } = require("../../lib/jwtAuth");
 
 // GET /api/others/forgotPassword
 // Send email because the user has forgotten the password.
@@ -21,10 +21,10 @@ router.post("/forgotPassword", async (req, res, next) => {
       return res.status(400).json({ [ERROR_CAUSE]: "User not found." });
     }
     // create token JWT (signed)
-    const jwtToken = await jwtSignLogin(user);
+    const jwtToken = await jwtSign(user, EXPIRED_TIME_RESET_PASSWORD);
     await user.sendEmail(
       "Reset your password",
-      `Parece que has olvidado tu contraseña para acceder a wallaclone.<br/>Pincha en el siguiente enlace para elegir una nueva contraseña: <br/>${process.env.URL_RESET_PASSWORD}?token=${jwtToken}`
+      `Parece que has olvidado tu contraseña para acceder a wallaclone.<br/>Pincha en el siguiente enlace para elegir una nueva contraseña: <br/>${process.env.URL_RESET_PASSWORD}?token=${jwtToken}<br/>¡ATENCION! Si en 5 minutos no solicita un cambio de contraseña este enlace expirará.`
     );
     res.status(200).json("Email send it correctly!");
   } catch (err) {
