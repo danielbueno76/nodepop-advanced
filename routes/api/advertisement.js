@@ -22,6 +22,7 @@ router.get("/", async function (req, res, next) {
     const { name, price, sale, tags, fields, sort } = req.query;
     const limit = parseInt(req.query.limit);
     const start = parseInt(req.query.start);
+    const page = parseInt(req.query.page);
     const filtro = {};
 
     if (name) {
@@ -54,7 +55,15 @@ router.get("/", async function (req, res, next) {
     if (tags) {
       filtro.tags = { $in: tags };
     }
-    const result = await Advertisement.list(filtro, limit, start, fields, sort);
+
+    const result = await Advertisement.list(
+      filtro,
+      limit,
+      page,
+      start,
+      fields,
+      sort
+    );
     res.status(200).json(
       result.map((elem) => {
         return {

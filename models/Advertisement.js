@@ -58,13 +58,13 @@ const advertisementSchema = mongoose.Schema({
 advertisementSchema.statics.list = function (
   filtro = {},
   limit = null,
-  skip = null,
+  page = null,
   fields = null,
   sort = null
 ) {
   const query = Advertisement.find(filtro);
   query.limit(limit);
-  query.skip(skip);
+  query.skip((page - 1) * limit);
   query.select(fields);
   if (sort instanceof Array && sort.length === 2) {
     query.sort([sort]);
