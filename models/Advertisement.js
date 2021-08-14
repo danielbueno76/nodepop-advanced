@@ -58,7 +58,7 @@ const advertisementSchema = mongoose.Schema({
 advertisementSchema.statics.list = function (
   filtro = {},
   limit = null,
-  page = null,
+  page = 1,
   fields = null,
   sort = null
 ) {
@@ -77,6 +77,10 @@ advertisementSchema.statics.list = function (
 // list of ads
 advertisementSchema.statics.listTags = function () {
   return TAGS;
+};
+
+advertisementSchema.statics.countAds = function () {
+  return Advertisement.countDocuments({});
 };
 
 // we create the model

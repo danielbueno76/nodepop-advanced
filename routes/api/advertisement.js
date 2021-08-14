@@ -56,14 +56,7 @@ router.get("/", async function (req, res, next) {
       filtro.tags = { $in: tags };
     }
 
-    const result = await Advertisement.list(
-      filtro,
-      limit,
-      page,
-      start,
-      fields,
-      sort
-    );
+    const result = await Advertisement.list(filtro, limit, page, fields, sort);
     res.status(200).json(
       result.map((elem) => {
         return {
@@ -82,6 +75,17 @@ router.get("/", async function (req, res, next) {
         };
       })
     );
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/adverts/number
+// Obtain number of ads
+router.get("/number", async (req, res, next) => {
+  try {
+    const result = await Advertisement.countAds();
+    res.status(200).json({ number: result });
   } catch (err) {
     next(err);
   }
