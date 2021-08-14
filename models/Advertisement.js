@@ -58,7 +58,7 @@ const advertisementSchema = mongoose.Schema({
 advertisementSchema.statics.list = function (
   filtro = {},
   limit = null,
-  page = 1,
+  page = null,
   fields = null,
   sort = null
 ) {
