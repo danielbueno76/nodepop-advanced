@@ -21,7 +21,6 @@ router.get("/", async function (req, res, next) {
   try {
     const { name, price, sale, tags, fields, sort } = req.query;
     const limit = parseInt(req.query.limit);
-    const start = parseInt(req.query.start);
     const page = parseInt(req.query.page);
     const filtro = {};
 
