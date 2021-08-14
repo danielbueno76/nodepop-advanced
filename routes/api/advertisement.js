@@ -256,7 +256,7 @@ router.delete("/:id", jwtAuth, async (req, res, next) => {
     if (!(await User.checkAdBelongToUsername(username, ad))) {
       return res.status(403).json({
         [ERROR_CAUSE]:
-          "You cannot update this ad because you are not the owner.",
+          "You cannot delete this ad because you are not the owner.",
       });
     }
 
