@@ -56,14 +56,7 @@ router.get("/", async function (req, res, next) {
       filtro.tags = { $in: tags };
     }
 
-    const result = await Advertisement.list(
-      filtro,
-      limit,
-      page,
-      start,
-      fields,
-      sort
-    );
+    const result = await Advertisement.list(filtro, limit, page, fields, sort);
     res.status(200).json(
       result.map((elem) => {
         return {
