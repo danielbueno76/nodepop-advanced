@@ -79,6 +79,10 @@ advertisementSchema.statics.listTags = function () {
   return TAGS;
 };
 
+advertisementSchema.statics.countAds = function () {
+  return Advertisement.count({});
+};
+
 // we create the model
 const Advertisement = mongoose.model("Advertisement", advertisementSchema);
 

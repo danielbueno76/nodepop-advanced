@@ -89,6 +89,17 @@ router.get("/", async function (req, res, next) {
 
 // GET /api/v1/adverts/tags
 // Obtain tags
+router.get("/number", async (req, res, next) => {
+  try {
+    const result = await Advertisement.countAds();
+    res.status(200).json({ number: result });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/adverts/tags
+// Obtain tags
 router.get("/tags", async (req, res, next) => {
   try {
     const result = await Advertisement.listTags();
