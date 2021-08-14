@@ -80,7 +80,7 @@ advertisementSchema.statics.listTags = function () {
 };
 
 advertisementSchema.statics.countAds = function () {
-  return Advertisement.count({});
+  return Advertisement.countDocuments({});
 };
 
 // we create the model
