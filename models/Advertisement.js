@@ -80,8 +80,8 @@ advertisementSchema.statics.listTags = function () {
 };
 
 //count ads
-advertisementSchema.statics.countAds = function () {
-  return Advertisement.countDocuments({});
+advertisementSchema.statics.countAds = function (query = {}) {
+  return Advertisement.countDocuments(query);
 };
 
 // we create the model

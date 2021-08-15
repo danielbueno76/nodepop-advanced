@@ -13,6 +13,7 @@ const requester = new cote.Requester({ name: "image client" });
 const pathImages = "/images/";
 const {
   consts: { ERROR_CAUSE, ERROR_NOT_FOUND, ID },
+  utils: { filterByField },
 } = require("../../utils");
 
 /* GET /api/v1/adverts */
@@ -22,40 +23,9 @@ router.get("/", async function (req, res, next) {
     const { name, price, sale, tags, fields, sort } = req.query;
     const limit = parseInt(req.query.limit);
     const page = parseInt(req.query.page);
-    const filtro = {};
+    const filter = filterByField(name, price, sale, tags);
 
-    if (name) {
-      filtro.name = new RegExp(name, "i");
-    }
-
-    if (price) {
-      let pricesArray = [];
-      if (Array.isArray(price)) {
-        pricesArray = price;
-      } else if (price.search("-") !== -1) {
-        pricesArray = price.split("-");
-      } else {
-        filtro.price = price;
-      }
-
-      if (pricesArray[0] === "") {
-        filtro.price = { $lte: pricesArray[1] };
-      } else if (pricesArray[1] === "") {
-        filtro.price = { $gte: pricesArray[0] };
-      } else if (pricesArray[0] !== "" && pricesArray[1] !== "") {
-        filtro.price = { $gte: pricesArray[0], $lte: pricesArray[1] };
-      }
-    }
-
-    if (sale) {
-      filtro.sale = sale;
-    }
-
-    if (tags) {
-      filtro.tags = { $in: tags };
-    }
-
-    const result = await Advertisement.list(filtro, limit, page, fields, sort);
+    const result = await Advertisement.list(filter, limit, page, fields, sort);
     res.status(200).json(
       result.map((elem) => {
         return {
@@ -83,7 +53,9 @@ router.get("/", async function (req, res, next) {
 // Obtain number of ads
 router.get("/number", async (req, res, next) => {
   try {
-    const result = await Advertisement.countAds();
+    const { name, price, sale, tags } = req.query;
+    const filter = filterByField(name, price, sale, tags);
+    const result = await Advertisement.countAds(filter);
     res.status(200).json({ number: result });
   } catch (err) {
     next(err);
