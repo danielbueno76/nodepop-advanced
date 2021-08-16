@@ -20,10 +20,10 @@ const {
 // List of ads
 router.get("/", async function (req, res, next) {
   try {
-    const { name, price, sale, tags, fields, sort } = req.query;
+    const { name, price, sale, tags, username, fields, sort } = req.query;
     const limit = parseInt(req.query.limit);
     const page = parseInt(req.query.page);
-    const filter = filterByField(name, price, sale, tags);
+    const filter = filterByField(name, price, sale, tags, username);
 
     const result = await Advertisement.list(filter, limit, page, fields, sort);
     res.status(200).json(

@@ -1,4 +1,4 @@
-const filterByField = (name, price, sale, tags) => {
+const filterByField = (name, price, sale, tags, username) => {
   const filter = {};
   if (name) {
     filter.name = new RegExp(name, "i");
@@ -30,6 +30,11 @@ const filterByField = (name, price, sale, tags) => {
   if (tags) {
     filter.tags = { $in: tags };
   }
+
+  if (username) {
+    filter.username = username;
+  }
+
   return filter;
 };
 
