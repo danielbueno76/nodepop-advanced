@@ -133,6 +133,11 @@ router.post("/", jwtAuth, async (req, res, next) => {
 
     const adCreated = await ad.save();
 
+    //store ad in array ads of document user
+    await User.findByIdAndUpdate(userId, {
+      $push: { ads: mongoose.Types.ObjectId(adCreated.id) },
+    });
+
     res.status(201).json({
       id: adCreated.id,
       createdAt: adCreated.createdAt,
