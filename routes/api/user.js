@@ -40,12 +40,12 @@ router.get("/", async function (req, res, next) {
 
 // GET /api/v1/users/:id
 // Obtain an user
-router.get("/:id", async (req, res, next) => {
+router.get("/:username", async (req, res, next) => {
   try {
-    const _id = req.params.id;
+    const username = req.params.username;
 
     const user = await User.findOne({
-      [ID]: mongoose.Types.ObjectId(_id),
+      username: username,
     });
     if (!user) {
       return res.status(404).json({ [ERROR_CAUSE]: ERROR_NOT_FOUND });
