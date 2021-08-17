@@ -36,6 +36,7 @@ app.use(
   upload.single("photo"),
   require("./routes/api/advertisement")
 );
+app.use(`/api/${VERSION_1}/users`, require("./routes/api/user"));
 app.use("/api/others", require("./routes/api/others"));
 app.use("/change-locale", require("./routes/change-locale"));
 

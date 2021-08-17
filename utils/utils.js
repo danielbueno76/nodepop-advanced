@@ -1,4 +1,4 @@
-const filterByField = (name, price, sale, tags, username) => {
+const filterByFieldAd = (name, price, sale, tags, username) => {
   const filter = {};
   if (name) {
     filter.name = new RegExp(name, "i");
@@ -38,6 +38,20 @@ const filterByField = (name, price, sale, tags, username) => {
   return filter;
 };
 
+const filterByFieldUser = (username, email) => {
+  const filter = {};
+
+  if (email) {
+    filter.email = semailale;
+  }
+
+  if (username) {
+    filter.username = username;
+  }
+
+  return filter;
+};
 module.exports = {
-  filterByField,
+  filterByFieldAd,
+  filterByFieldUser,
 };

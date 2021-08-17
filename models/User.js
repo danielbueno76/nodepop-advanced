@@ -33,6 +33,17 @@ const userSchema = mongoose.Schema({
   adsFav: { type: [String], index: true },
 });
 
+// list of users
+userSchema.statics.list = function (filter = {}, sort = null) {
+  const query = User.find(filter);
+  if (sort instanceof Array && sort.length === 2) {
+    query.sort([sort]);
+  } else {
+    query.sort(sort);
+  }
+  return query.exec();
+};
+
 userSchema.statics.doesUserExist = async function (username) {
   const user = await this.findOne({ username });
   if (user) {
@@ -41,8 +52,8 @@ userSchema.statics.doesUserExist = async function (username) {
   return false;
 };
 
-userSchema.statics.checkAdBelongToUsername = async function (username, ad) {
-  if (username && username.localeCompare(ad.username) == 0) {
+userSchema.methods.checkAdBelongToUsername = async function (ad) {
+  if (this.username && this.username.localeCompare(ad.username) == 0) {
     return true;
   }
   return false;

@@ -117,13 +117,6 @@ describe("Ads basic operations", () => {
 });
 
 describe("Ads wrong operations", () => {
-  it("[AUTH] POST /api/v1/adverts with username that does not exist should return status 400", function (done) {
-    request(app)
-      .post(`/api/v1/adverts`)
-      .set("Authorization", "Bearer " + token)
-      .send({ ...adsInit[0], username: "userNotExist" })
-      .expect(400, done);
-  });
   it("[AUTH] PUT /api/v1/adverts/:id of an ad that does not belong to the current user should return status 403", function (done) {
     request(app)
       .put(`/api/v1/adverts/${idAdToTest}`)

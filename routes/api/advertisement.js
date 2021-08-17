@@ -13,7 +13,7 @@ const requester = new cote.Requester({ name: "image client" });
 const pathImages = "/images/";
 const {
   consts: { ERROR_CAUSE, ERROR_NOT_FOUND, ID },
-  utils: { filterByField },
+  utils: { filterByFieldAd },
 } = require("../../utils");
 
 /* GET /api/v1/adverts */
@@ -23,7 +23,7 @@ router.get("/", async function (req, res, next) {
     const { name, price, sale, tags, username, fields, sort } = req.query;
     const limit = parseInt(req.query.limit);
     const page = parseInt(req.query.page);
-    const filter = filterByField(name, price, sale, tags, username);
+    const filter = filterByFieldAd(name, price, sale, tags, username);
 
     const result = await Advertisement.list(filter, limit, page, fields, sort);
     res.status(200).json(
@@ -54,7 +54,7 @@ router.get("/", async function (req, res, next) {
 router.get("/number", async (req, res, next) => {
   try {
     const { name, price, sale, tags } = req.query;
-    const filter = filterByField(name, price, sale, tags);
+    const filter = filterByFieldAd(name, price, sale, tags);
     const result = await Advertisement.countAds(filter);
     res.status(200).json({ number: result });
   } catch (err) {
@@ -165,13 +165,13 @@ router.post("/", jwtAuth, async (req, res, next) => {
 router.put("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const { username } = await User.findOne({
+    const user = await User.findOne({
       [ID]: mongoose.Types.ObjectId(jwtReturnUser(req.headers.authorization)),
     });
     const ad = await Advertisement.findOne({
       [ID]: mongoose.Types.ObjectId(_id),
     });
-    if (!(await User.checkAdBelongToUsername(username, ad))) {
+    if (user && !(await user.checkAdBelongToUsername(ad))) {
       return res.status(403).json({
         [ERROR_CAUSE]:
           "You cannot update this ad because you are not the owner.",
@@ -212,7 +212,7 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
 router.delete("/:id", jwtAuth, async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const { id: userId, username } = await User.findOne({
+    const user = await User.findOne({
       [ID]: mongoose.Types.ObjectId(jwtReturnUser(req.headers.authorization)),
     });
 
@@ -225,14 +225,14 @@ router.delete("/:id", jwtAuth, async (req, res, next) => {
       });
     }
 
-    if (!(await User.checkAdBelongToUsername(username, ad))) {
+    if (user && !(await user.checkAdBelongToUsername(ad))) {
       return res.status(403).json({
         [ERROR_CAUSE]:
           "You cannot delete this ad because you are not the owner.",
       });
     }
 
-    await User.findByIdAndUpdate(userId, {
+    await User.findByIdAndUpdate(user.id, {
       $pull: { ads: mongoose.Types.ObjectId(_id) },
     });
     await Advertisement.deleteOne({ [ID]: mongoose.Types.ObjectId(_id) });
