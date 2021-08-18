@@ -51,7 +51,6 @@ router.get("/:username", async (req, res, next) => {
       return res.status(404).json({ [ERROR_CAUSE]: ERROR_NOT_FOUND });
     }
     res.status(200).json({
-      id: user.id,
       createdAt: user.createdAt.toString(),
       updatedAt: user.updatedAt.toString(),
       username: user.username,
