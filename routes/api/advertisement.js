@@ -206,7 +206,22 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
       return;
     }
 
-    res.json({ result: adActualizado });
+    res.json({
+      result: {
+        id: adActualizado.id,
+        createdAt: adActualizado.createdAt.toString(),
+        updatedAt: adActualizado.updatedAt.toString(),
+        name: adActualizado.name,
+        price: adActualizado.price,
+        description: adActualizado.description,
+        sale: adActualizado.sale,
+        tags: adActualizado.tags,
+        username: adActualizado.username,
+        booked: adActualizado.booked,
+        sold: adActualizado.sold,
+        photo: adActualizado.photo ? pathImages + adActualizado.photo : null,
+      },
+    });
   } catch (error) {
     next(error);
   }
