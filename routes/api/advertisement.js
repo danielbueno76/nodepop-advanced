@@ -184,14 +184,17 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
     }
     if (!ad) {
       return res.status(404).json({
-        [ERROR_CAUSE]: "You cannot delete an ad that does not exist.",
+        [ERROR_CAUSE]: "You cannot update an ad that does not exist.",
       });
     }
     const adData = { ...req.body, updatedAt: Date.now() };
     if (adData.username) {
       return res.status(400).json({ [ERROR_CAUSE]: "Cannot update username" });
     }
-
+    if (req.file) {
+      // Send a message with fileName and full path.
+      adData.photo = storeFileSmallName(req.file);
+    }
     const adActualizado = await Advertisement.findOneAndUpdate(
       { [ID]: mongoose.Types.ObjectId(_id) },
       adData,
