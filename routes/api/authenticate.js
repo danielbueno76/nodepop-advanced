@@ -90,6 +90,25 @@ router.get("/me", jwtAuth, async (req, res, next) => {
   }
 });
 
+// POST /api/auth/checkPassword
+// Check if password is correct
+router.post("/checkPassword", jwtAuth, async (req, res, next) => {
+  try {
+    const userId = jwtReturnUser(req.headers.authorization);
+    const { password } = req.body;
+    const user = await User.findOne({ [ID]: mongoose.Types.ObjectId(userId) });
+    if (!user || !(await user.comparePassword(password))) {
+      const error = new Error("Invalid credentials");
+      error.status = 401;
+      next(error);
+      return;
+    }
+    res.status(200).json("The password is correct.");
+  } catch (err) {
+    next(err);
+  }
+});
+
 // PUT /api/auth/me
 // Modify info about user
 router.put("/me", jwtAuth, async (req, res, next) => {
@@ -117,7 +136,17 @@ router.put("/me", jwtAuth, async (req, res, next) => {
       return;
     }
 
-    res.json({ result: userActualizado });
+    res.json({
+      result: {
+        id: userActualizado.id,
+        username: userActualizado.username,
+        createdAt: userActualizado.createdAt,
+        email: userActualizado.email,
+        updatedAt: userActualizado.updatedAt,
+        ads: userActualizado.ads,
+        adsFav: userActualizado.adsFav,
+      },
+    });
   } catch (error) {
     if (error.name === "MongoError" && error.code === 11000) {
       const customError = new Error(USER_EMAIL_UNIQUE);
