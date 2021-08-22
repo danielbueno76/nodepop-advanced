@@ -28,17 +28,19 @@ const advertisementSchema = mongoose.Schema({
   photo: String,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  tags: {
-    type: [String],
-    enum: {
-      values: TAGS,
-      message:
-        "{VALUE} is not supported. Choose one of the following tags: " +
-        TAGS.join(", "),
+  tags: [
+    {
+      type: String,
+      enum: {
+        values: TAGS,
+        message:
+          "{VALUE} is not supported. Choose one of the following tags: " +
+          TAGS.join(", "),
+      },
+      validate: (v) => TAGS.includes(v),
+      index: true,
     },
-    validate: (v) => Array.isArray(v) && v.length > 0,
-    index: true,
-  },
+  ],
   username: {
     type: String,
     required: [true, "The username is mandatory"],

@@ -127,17 +127,16 @@ router.post("/", jwtAuth, async (req, res, next) => {
     const ad = new Advertisement({
       ...adData,
       username: user.username,
+      tags: adData.tags.split(","),
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
-
     const adCreated = await ad.save();
 
     //store ad in array ads of document user
     await User.findByIdAndUpdate(userId, {
       $push: { ads: mongoose.Types.ObjectId(adCreated.id) },
     });
-
     res.status(201).json({
       id: adCreated.id,
       createdAt: adCreated.createdAt,
@@ -191,6 +190,8 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
     if (adData.username) {
       return res.status(400).json({ [ERROR_CAUSE]: "Cannot update username" });
     }
+    adData.tags = adData.tags.split(",");
+
     if (req.file) {
       // Send a message with fileName and full path.
       adData.photo = storeFileSmallName(req.file);
@@ -208,7 +209,6 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
       res.status(404).json({ [ERROR_CAUSE]: ERROR_NOT_FOUND });
       return;
     }
-
     res.json({
       result: {
         id: adActualizado.id,
