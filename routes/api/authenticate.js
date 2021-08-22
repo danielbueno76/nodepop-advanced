@@ -115,9 +115,10 @@ router.put("/me", jwtAuth, async (req, res, next) => {
   try {
     const userId = jwtReturnUser(req.headers.authorization);
     const userData = { ...req.body, updatedAt: Date.now() };
-    if (userData.ads || userData.adsFav || userData.createdAt) {
+    if (userData.ads || userData.createdAt) {
       return res.status(400).json({
-        [ERROR_CAUSE]: "You only can update your email, user or password",
+        [ERROR_CAUSE]:
+          "You only can update your email, user, adsFav or password",
       });
     }
     if (userData.password) {
@@ -155,45 +156,6 @@ router.put("/me", jwtAuth, async (req, res, next) => {
     } else {
       next(error);
     }
-  }
-});
-// PUT /api/auth/me/fav
-// Add or delete fav ad to the list of the user
-router.put("/me/fav", jwtAuth, async (req, res, next) => {
-  try {
-    const operationFav = req.query.action;
-    const userId = jwtReturnUser(req.headers.authorization);
-    const { idAdFav } = { ...req.body };
-    if (!idAdFav || !operationFav) {
-      return res.status(400).json({
-        [ERROR_CAUSE]:
-          "The structure to add the ad to the list of favorites is incorrect. You should send a json object with the id of the ad (idAdFav) and a query(action=add or action=delete) if you want to add or delete the ad of the fav list.",
-      });
-    }
-    if (!(await Advertisement.findById(idAdFav))) {
-      return res.status(400).json({
-        [ERROR_CAUSE]: `The ad ${idAdFav} does not exist.`,
-      });
-    }
-    operationFav === "add" &&
-      (await User.findByIdAndUpdate(userId, {
-        $push: { adsFav: mongoose.Types.ObjectId(idAdFav) },
-        updatedAt: Date.now(),
-      }));
-
-    operationFav === "delete" &&
-      (await User.findByIdAndUpdate(userId, {
-        $pull: { adsFav: mongoose.Types.ObjectId(idAdFav) },
-        updatedAt: Date.now(),
-      }));
-
-    res.json(
-      `Ad id ${idAdFav} ${
-        operationFav === "add" ? "added" : "deleted"
-      } of fav list.`
-    );
-  } catch (error) {
-    next(error);
   }
 });
 
