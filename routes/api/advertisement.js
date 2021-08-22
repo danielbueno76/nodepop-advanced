@@ -127,7 +127,7 @@ router.post("/", jwtAuth, async (req, res, next) => {
     const ad = new Advertisement({
       ...adData,
       username: user.username,
-      tags: adData.tags.split(","),
+      tags: adData.tags && adData.tags.split(","),
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });
@@ -190,7 +190,7 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
     if (adData.username) {
       return res.status(400).json({ [ERROR_CAUSE]: "Cannot update username" });
     }
-    adData.tags = adData.tags.split(",");
+    adData.tags && (adData.tags = adData.tags.split(","));
 
     if (req.file) {
       // Send a message with fileName and full path.
