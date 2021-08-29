@@ -25,7 +25,7 @@ router.post("/login", async (req, res, next) => {
     const user = await User.findOne({ username });
 
     if (!user || !(await user.comparePassword(password))) {
-      const error = new Error("Invalid credentials");
+      const error = new Error("invalid_credentials");
       error.status = 401;
       next(error);
       return;
@@ -74,7 +74,7 @@ router.get("/me", jwtAuth, async (req, res, next) => {
     const userId = jwtReturnUser(req.headers.authorization);
     const user = await User.findOne({ [ID]: mongoose.Types.ObjectId(userId) });
     if (!user) {
-      return res.status(400).json({ [ERROR_CAUSE]: "Wrong user" });
+      return res.status(400).json({ [ERROR_CAUSE]: "username_not_found" });
     }
     res.json({
       id: user.id,
@@ -98,12 +98,12 @@ router.post("/checkPassword", jwtAuth, async (req, res, next) => {
     const { password } = req.body;
     const user = await User.findOne({ [ID]: mongoose.Types.ObjectId(userId) });
     if (!user || !(await user.comparePassword(password))) {
-      const error = new Error("Invalid credentials");
+      const error = new Error("invalid_credentials");
       error.status = 401;
       next(error);
       return;
     }
-    res.status(200).json("The password is correct.");
+    res.status(200).json("password_ok");
   } catch (err) {
     next(err);
   }
@@ -117,8 +117,7 @@ router.put("/me", jwtAuth, async (req, res, next) => {
     const userData = { ...req.body, updatedAt: Date.now() };
     if (userData.ads || userData.createdAt) {
       return res.status(400).json({
-        [ERROR_CAUSE]:
-          "You only can update your email, user, adsFav or password",
+        [ERROR_CAUSE]: "user_not_update",
       });
     }
     if (userData.password) {
@@ -172,7 +171,7 @@ router.delete("/me", jwtAuth, async (req, res, next) => {
       await Advertisement.deleteOne({ [ID]: ad });
     }
     await User.deleteOne({ [ID]: userId });
-    res.status(204).json("User deleted correctly");
+    res.status(204).json("user_delete_ok");
   } catch (error) {
     next(error);
   }

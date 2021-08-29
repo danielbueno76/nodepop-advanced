@@ -1,9 +1,9 @@
 const ERROR_CAUSE = "errorCause";
 const EXPIRED_TIME_LOGIN = "12h";
 const EXPIRED_TIME_RESET_PASSWORD = "5m";
-const USER_EMAIL_UNIQUE = "username and/or email already exists.";
+const USER_EMAIL_UNIQUE = "user_email_unique";
 const VERSION_1 = "v1";
-const ERROR_NOT_FOUND = "not found";
+const ERROR_NOT_FOUND = "not_found";
 const ID = "_id";
 
 module.exports = {

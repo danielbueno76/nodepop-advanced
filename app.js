@@ -23,10 +23,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// setup i18n
-const i18n = require("./lib/i18nConfigure");
-app.use(i18n.init);
-
 /**
  * API paths
  */
@@ -38,7 +34,6 @@ app.use(
 );
 app.use(`/api/${VERSION_1}/users`, require("./routes/api/user"));
 app.use("/api/others", require("./routes/api/others"));
-app.use("/change-locale", require("./routes/change-locale"));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

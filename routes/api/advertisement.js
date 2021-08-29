@@ -119,9 +119,7 @@ router.post("/", jwtAuth, async (req, res, next) => {
 
     if (!user) {
       return res.status(400).json({
-        [ERROR_CAUSE]: user
-          ? `The username ${user} does not exist.`
-          : "You must introduce the username who created this ad.",
+        [ERROR_CAUSE]: user ? "username_not_found" : "username_mandatory_ad",
       });
     }
     const ad = new Advertisement({
@@ -177,18 +175,17 @@ router.put("/:id", jwtAuth, async (req, res, next) => {
     });
     if (user && !(await user.checkAdBelongToUsername(ad))) {
       return res.status(403).json({
-        [ERROR_CAUSE]:
-          "You cannot update this ad because you are not the owner.",
+        [ERROR_CAUSE]: "ad_not_owner_update",
       });
     }
     if (!ad) {
       return res.status(404).json({
-        [ERROR_CAUSE]: "You cannot update an ad that does not exist.",
+        [ERROR_CAUSE]: "ad_not_exist_update",
       });
     }
     const adData = { ...req.body, updatedAt: Date.now() };
     if (adData.username) {
-      return res.status(400).json({ [ERROR_CAUSE]: "Cannot update username" });
+      return res.status(400).json({ [ERROR_CAUSE]: "ad_not_update_username" });
     }
     adData.tags && (adData.tags = adData.tags.split(","));
 
@@ -244,23 +241,25 @@ router.delete("/:id", jwtAuth, async (req, res, next) => {
     });
     if (!ad) {
       return res.status(404).json({
-        [ERROR_CAUSE]: "You cannot delete an ad that does not exist.",
+        [ERROR_CAUSE]: "ad_not_exist_delete",
       });
     }
 
     if (user && !(await user.checkAdBelongToUsername(ad))) {
       return res.status(403).json({
-        [ERROR_CAUSE]:
-          "You cannot delete this ad because you are not the owner.",
+        [ERROR_CAUSE]: "ad_not_owner_delete",
       });
     }
 
     await User.findByIdAndUpdate(user.id, {
-      $pull: { ads: mongoose.Types.ObjectId(_id) },
+      $pull: {
+        ads: mongoose.Types.ObjectId(_id),
+        adsFav: mongoose.Types.ObjectId(_id),
+      },
     });
     await Advertisement.deleteOne({ [ID]: mongoose.Types.ObjectId(_id) });
 
-    res.status(204).json("Ad deleted correctly");
+    res.status(204).json("ad_deleted_ok");
   } catch (error) {
     next(error);
   }
