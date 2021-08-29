@@ -254,9 +254,16 @@ router.delete("/:id", jwtAuth, async (req, res, next) => {
     await User.findByIdAndUpdate(user.id, {
       $pull: {
         ads: mongoose.Types.ObjectId(_id),
-        adsFav: mongoose.Types.ObjectId(_id),
       },
     });
+    await User.updateMany(
+      {},
+      {
+        $pull: {
+          adsFav: mongoose.Types.ObjectId(_id),
+        },
+      }
+    );
     await Advertisement.deleteOne({ [ID]: mongoose.Types.ObjectId(_id) });
 
     res.status(204).json("ad_deleted_ok");
