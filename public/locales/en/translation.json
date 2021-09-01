@@ -63,6 +63,7 @@
   "delete_user": "Delete user",
   "user_intro": "Information about your user",
   "empty_ads_user": "You do not have any ads published",
+  "empty_ads_user_fav": "You do not have any ads marked as fav",
   "empty_ads_other_user": "This user does not have any ads published",
   "list_ads_user": "List of advertisements by {{username}}",
   "change_language_msg": "Change language correctly!",
@@ -91,5 +92,6 @@
   "user_delete_ok": "User deleted correctly",
   "subject_email_reset_password": "Reset your password",
   "body_email_reset_password": "You seem to have forgotten your password to access wallaclone.<br/>Click in this link to create a new password: <br/>{{url}}?token={{token}}<br/>ATTENTION! If in 5 minutes you haven't click in the link, it will expire",
-  "email_ok": "Email send it correctly!"
+  "email_ok": "Email send it correctly!",
+  "email_user": "This is my email: {{email}} . Do not hesitate to contact me!"
 }

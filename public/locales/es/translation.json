@@ -63,6 +63,7 @@
   "delete_user": "Borra tu usuario",
   "user_intro": "Información de tu usuario",
   "empty_ads_user": "Tu usuario no tiene anuncios publicados",
+  "empty_ads_user_fav": "Tu usuario no tiene anuncios marcados como favorito",
   "empty_ads_other_user": "Este usuario no tiene anuncios publicados",
   "list_ads_user": "Lista de anuncios de {{username}}",
   "change_language_msg": "Lenguaje cambiado correctamente",
@@ -91,5 +92,6 @@
   "user_delete_ok": "Usuario borrado correctamente",
   "subject_email_reset_password": "Resetea tu contraseña",
   "body_email_reset_password": "Parece que has olvidado tu contraseña para acceder a wallaclone.<br/>Pincha en el siguiente enlace para elegir una nueva contraseña: <br/>{{url}}?token={{token}}<br/>¡ATENCION! Si en 5 minutos no solicita un cambio de contraseña este enlace expirará.",
-  "email_ok": "¡Email enviado correctamente!"
+  "email_ok": "¡Email enviado correctamente!",
+  "email_user": "Este es mi email: {{email}} . No dudes en contactarme!"
 }
