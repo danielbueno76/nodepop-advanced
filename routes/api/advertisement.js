@@ -137,6 +137,7 @@ router.post("/", jwtAuth, async (req, res, next) => {
     });
     res.status(201).json({
       id: adCreated.id,
+      description: adCreated.description,
       createdAt: adCreated.createdAt,
       updatedAt: adCreated.updatedAt,
       username: adCreated.username,
